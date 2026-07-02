@@ -246,8 +246,8 @@ export default function Hero() {
         </video>
 
         {/* Overlays */}
-        <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(180deg,rgba(3,8,15,0.45) 0%,rgba(3,8,15,0.2) 35%,rgba(3,8,15,0.5) 65%,rgba(3,8,15,0.92) 100%)" }} />
-        <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", background: "linear-gradient(90deg,rgba(3,8,15,0.75) 0%,rgba(3,8,15,0.4) 40%,rgba(3,8,15,0.05) 65%,transparent 100%)" }} />
+        <div style={{ position: "absolute", inset: 0, zIndex: 2, pointerEvents: "none", background: "linear-gradient(180deg,rgba(3,8,15,0.2) 0%,rgba(3,8,15,0.05) 35%,rgba(3,8,15,0.3) 65%,rgba(3,8,15,0.88) 100%)" }} />
+        <div style={{ position: "absolute", inset: 0, zIndex: 3, pointerEvents: "none", background: "linear-gradient(90deg,rgba(3,8,15,0.6) 0%,rgba(3,8,15,0.25) 40%,rgba(3,8,15,0.02) 65%,transparent 100%)" }} />
         <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, zIndex: 4, background: "linear-gradient(90deg,transparent 0%,#1565C0 20%,#00B4D8 50%,#1565C0 80%,transparent 100%)" }} />
 
         {/* Conteúdo */}
@@ -260,7 +260,6 @@ export default function Hero() {
             </span>
           </motion.div>
 
-          {/* Logo standby — descomentar se cliente quiser logo na hero
           <motion.div {...fadeUp(0.2)} className="hero-logo" style={{ marginBottom: 28 }}>
             <Image
               src="/images/selum-logo-full.png"
@@ -270,7 +269,6 @@ export default function Hero() {
               priority
             />
           </motion.div>
-          */}
 
           <motion.div {...fadeUp(0.3)} style={{ marginBottom: 40 }}>
             {/* Frase principal impacto */}

@@ -12,13 +12,14 @@ export default function Footer() {
     <>
       <style>{`
         .footer {
-          background: #050D1A;
+          background: linear-gradient(135deg, #E8EDF2 0%, #F0F4F8 50%, #E8EDF2 100%);
           border-top: 1px solid rgba(33,150,243,0.12);
           font-family: var(--font-space), 'Helvetica Neue', Arial, sans-serif;
         }
         .footer-accent {
           height: 2px;
           background: linear-gradient(90deg, transparent, #1565C0 25%, #00B4D8 50%, #1565C0 75%, transparent);
+          background-color: #E8EDF2;
         }
         .footer-top {
           display: grid;
@@ -36,7 +37,7 @@ export default function Footer() {
         }
         .ft-desc {
           font-size: 12px;
-          color: rgba(176,190,197,0.4);
+          color: rgba(10,30,60,0.5);
           line-height: 1.7;
           max-width: 220px;
           margin-bottom: 20px;
@@ -54,32 +55,32 @@ export default function Footer() {
         .ft-col-title {
           font-family: var(--font-orbitron), 'Helvetica Neue', Arial, sans-serif;
           font-size: 10px; font-weight: 700; letter-spacing: 2.5px;
-          text-transform: uppercase; color: rgba(224,232,238,0.55);
+          text-transform: uppercase; color: rgba(10,30,60,0.7);
           margin-bottom: 18px; padding-bottom: 10px;
           border-bottom: 1px solid rgba(33,150,243,0.1);
         }
         .ft-links { display: flex; flex-direction: column; gap: 10px; }
         .ft-link {
-          font-size: 12px; color: rgba(176,190,197,0.4);
+          font-size: 12px; color: rgba(10,30,60,0.5);
           text-decoration: none; transition: color 0.2s;
           display: flex; align-items: center; gap: 6px;
         }
         .ft-link::before { content: '›'; color: rgba(33,150,243,0.3); font-size: 14px; }
-        .ft-link:hover { color: #64B5F6; }
+        .ft-link:hover { color: #1565C0; }
         .ft-link:hover::before { color: #2196F3; }
         .ft-contact-item { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px; }
         .ft-contact-icon { font-size: 13px; color: #2196F3; margin-top: 1px; flex-shrink: 0; }
-        .ft-contact-text { font-size: 12px; color: rgba(176,190,197,0.4); line-height: 1.55; }
+        .ft-contact-text { font-size: 12px; color: rgba(10,30,60,0.5); line-height: 1.55; }
         .footer-bottom {
           padding: 20px 64px;
           display: flex; align-items: center; justify-content: space-between;
           gap: 16px; flex-wrap: wrap;
         }
-        .ft-copy { font-size: 11px; color: rgba(176,190,197,0.2); }
-        .ft-copy span { color: rgba(33,150,243,0.4); }
+        .ft-copy { font-size: 11px; color: rgba(10,30,60,0.4); }
+        .ft-copy span { color: #1565C0; }
         .ft-bottom-links { display: flex; gap: 20px; }
         .ft-bottom-link {
-          font-size: 10px; color: rgba(176,190,197,0.2);
+          font-size: 10px; color: rgba(10,30,60,0.35);
           text-decoration: none; letter-spacing: 1px; transition: color 0.2s;
         }
         .ft-bottom-link:hover { color: rgba(176,190,197,0.5); }

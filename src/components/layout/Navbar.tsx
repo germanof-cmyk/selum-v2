@@ -48,59 +48,71 @@ export default function Navbar() {
     { href: "#contact",  label: t("contact"),  icon: <Mail size={14} /> },
   ];
 
+  const navBg = "linear-gradient(135deg, #E8EDF2 0%, #F0F4F8 50%, #E8EDF2 100%)";
+
   return (
     <header style={{
       position: "fixed", top: 0, left: 0, right: 0, zIndex: 50,
-      transition: "all 0.4s ease",
-      background: "rgba(5,15,35,0.97)",
-      borderBottom: "1px solid rgba(33,150,243,0.25)",
-      backdropFilter: "blur(20px)",
+      background: navBg,
+      borderBottom: "1px solid rgba(21,101,192,0.2)",
+      backdropFilter: "blur(12px)",
       overflow: "visible",
+      transition: "height 0.3s ease",
     }}>
       {/* Linha acento topo */}
       <div style={{ height: 2, background: "linear-gradient(90deg,transparent,#1565C0 25%,#00B4D8 50%,#1565C0 75%,transparent)" }} />
 
       <div style={{
         maxWidth: 1280, margin: "0 auto",
-        padding: isMobile ? "0 16px" : (scrolled ? "0 32px" : "0 32px 0 180px"),
+        padding: isMobile ? "0 16px" : "0 160px",
         display: "flex", alignItems: "center", justifyContent: "space-between",
-        height: isMobile ? 64 : (scrolled ? 60 : 80),
-        transition: "all 0.4s ease",
+        height: isMobile ? 64 : (scrolled ? 56 : 72),
+        transition: "all 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
         position: "relative",
         overflow: "visible",
       }}>
 
-        {/* ── LOGO ── */}
+        {/* ── LOGO OVERFLOW DESKTOP ── */}
         {!isMobile && (
           <AnimatePresence mode="wait">
             {!scrolled ? (
               <motion.div
-                key="logo-full"
-                initial={{ opacity: 0, y: -20, scale: 0.8 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -20, scale: 0.8 }}
-                transition={{ duration: 0.35 }}
-                style={{ position: "absolute", left: 32, top: -8, zIndex: 60, cursor: "pointer" }}
+                key="logo-overflow"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                transition={{ duration: 0.3 }}
                 onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+                style={{
+                  position: "absolute",
+                  left: 16, top: -20,
+                  zIndex: 60, cursor: "pointer",
+                  width: 110, height: 110,
+                  borderRadius: "50%",
+                  boxShadow: "0 4px 24px rgba(21,101,192,0.35), 0 0 0 5px #F0F4F8",
+                  overflow: "hidden",
+                  background: "#fff",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                }}
               >
                 <Image
                   src="/images/selum-logo-full.png"
                   alt="Selum"
-                  width={130}
-                  height={130}
+                  width={100}
+                  height={100}
                   priority
-                  style={{ objectFit: "contain", height: 86, width: "auto" }}
+                  style={{ objectFit: "contain", width: 90, height: 90 }}
                 />
               </motion.div>
             ) : (
               <motion.div
-                key="logo-lateral"
+                key="logo-small"
                 initial={{ opacity: 0, x: -16 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -16 }}
                 transition={{ duration: 0.3 }}
-                style={{ cursor: "pointer" }}
                 onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+                style={{ cursor: "pointer" }}
               >
                 <Image
                   src="/images/selum-logo-lateral.png"
@@ -118,12 +130,12 @@ export default function Navbar() {
         {isMobile && (
           <div onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} style={{ cursor: "pointer" }}>
             <Image
-              src="/images/selum-logo-lateral.png"
+              src="/images/selum-logo-full.png"
               alt="Selum"
-              width={120}
-              height={36}
+              width={100}
+              height={100}
               priority
-              style={{ objectFit: "contain", height: 36, width: "auto" }}
+              style={{ objectFit: "contain", height: 44, width: "auto" }}
             />
           </div>
         )}
@@ -140,28 +152,27 @@ export default function Navbar() {
                   padding: "8px 16px", borderRadius: 3,
                   textDecoration: "none", position: "relative",
                   transition: "background 0.2s",
-                  fontFamily: "var(--font-space), sans-serif",
                 }}
                 onMouseEnter={e => {
-                  e.currentTarget.style.background = "rgba(33,150,243,0.07)";
-                  (e.currentTarget.querySelector(".ni") as HTMLElement).style.color = "#00B4D8";
-                  (e.currentTarget.querySelector(".nl") as HTMLElement).style.color = "#fff";
+                  e.currentTarget.style.background = "rgba(21,101,192,0.08)";
+                  (e.currentTarget.querySelector(".ni") as HTMLElement).style.color = "#1565C0";
+                  (e.currentTarget.querySelector(".nl") as HTMLElement).style.color = "#0A1E3C";
                   (e.currentTarget.querySelector(".nln") as HTMLElement).style.transform = "scaleX(1)";
                 }}
                 onMouseLeave={e => {
                   e.currentTarget.style.background = "transparent";
-                  (e.currentTarget.querySelector(".ni") as HTMLElement).style.color = "rgba(255,255,255,0.7)";
-                  (e.currentTarget.querySelector(".nl") as HTMLElement).style.color = "rgba(255,255,255,0.9)";
+                  (e.currentTarget.querySelector(".ni") as HTMLElement).style.color = "rgba(10,30,60,0.5)";
+                  (e.currentTarget.querySelector(".nl") as HTMLElement).style.color = "rgba(10,30,60,0.75)";
                   (e.currentTarget.querySelector(".nln") as HTMLElement).style.transform = "scaleX(0)";
                 }}
               >
-                <span className="ni" style={{ color: "rgba(255,255,255,0.7)", transition: "color 0.2s", display: "flex" }}>
+                <span className="ni" style={{ color: "rgba(10,30,60,0.5)", transition: "color 0.2s", display: "flex" }}>
                   {l.icon}
                 </span>
-                <span className="nl" style={{ fontSize: 11, fontWeight: 700, letterSpacing: "2px", textTransform: "uppercase", color: "rgba(255,255,255,0.9)", transition: "color 0.2s", fontFamily: "var(--font-orbitron), sans-serif" }}>
+                <span className="nl" style={{ fontSize: 11, fontWeight: 700, letterSpacing: "2px", textTransform: "uppercase", color: "rgba(10,30,60,0.75)", transition: "color 0.2s", fontFamily: "var(--font-orbitron), sans-serif" }}>
                   {l.label}
                 </span>
-                <span className="nln" style={{ position: "absolute", bottom: 0, left: 16, right: 16, height: 1.5, background: "#00B4D8", transform: "scaleX(0)", transformOrigin: "left", transition: "transform 0.25s" }} />
+                <span className="nln" style={{ position: "absolute", bottom: 0, left: 16, right: 16, height: 1.5, background: "#1565C0", transform: "scaleX(0)", transformOrigin: "left", transition: "transform 0.25s" }} />
               </a>
             ))}
           </nav>
@@ -169,13 +180,11 @@ export default function Navbar() {
 
         {/* ── RIGHT ── */}
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-
-          {/* Lang — desktop only */}
           {!isMobile && (
             <div style={{ position: "relative" }}>
               <button
                 onClick={() => setLangOpen(!langOpen)}
-                style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 10, letterSpacing: "2px", textTransform: "uppercase", color: "rgba(255,255,255,0.5)", background: "none", border: "none", cursor: "pointer", padding: "6px 8px", fontFamily: "var(--font-space), sans-serif" }}
+                style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 10, letterSpacing: "2px", textTransform: "uppercase", color: "rgba(10,30,60,0.4)", background: "none", border: "none", cursor: "pointer", padding: "6px 8px", fontFamily: "var(--font-space), sans-serif" }}
               >
                 <Globe size={12} />
                 {locale.toUpperCase()}
@@ -186,13 +195,13 @@ export default function Navbar() {
                     initial={{ opacity: 0, y: 6 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 6 }}
-                    style={{ position: "absolute", right: 0, top: "100%", marginTop: 8, background: "#071C30", border: "1px solid rgba(21,101,192,0.3)", borderRadius: 4, overflow: "hidden", minWidth: 110 }}
+                    style={{ position: "absolute", right: 0, top: "100%", marginTop: 8, background: "#F0F4F8", border: "1px solid rgba(21,101,192,0.2)", borderRadius: 4, overflow: "hidden", minWidth: 110, boxShadow: "0 4px 16px rgba(0,0,0,0.1)" }}
                   >
                     {locales.map((l) => (
                       <button
                         key={l.code}
                         onClick={() => switchLocale(l.code)}
-                        style={{ width: "100%", display: "flex", alignItems: "center", gap: 8, padding: "10px 16px", fontSize: 11, letterSpacing: "1.5px", textTransform: "uppercase", background: "none", border: "none", cursor: "pointer", color: l.code === locale ? "#2196F3" : "#B0BEC5", fontFamily: "var(--font-space), sans-serif" }}
+                        style={{ width: "100%", display: "flex", alignItems: "center", gap: 8, padding: "10px 16px", fontSize: 11, letterSpacing: "1.5px", textTransform: "uppercase", background: "none", border: "none", cursor: "pointer", color: l.code === locale ? "#1565C0" : "rgba(10,30,60,0.6)", fontFamily: "var(--font-space), sans-serif" }}
                       >
                         {l.flag} {l.label}
                       </button>
@@ -203,7 +212,6 @@ export default function Navbar() {
             </div>
           )}
 
-          {/* CTA — desktop only */}
           {!isMobile && (
             <a
               href="#contact"
@@ -216,11 +224,10 @@ export default function Navbar() {
             </a>
           )}
 
-          {/* Mobile toggle */}
           {isMobile && (
             <button
               onClick={() => setOpen(!open)}
-              style={{ background: "none", border: "1px solid rgba(33,150,243,0.3)", cursor: "pointer", color: "#B0BEC5", padding: 8, display: "flex", alignItems: "center", justifyContent: "center" }}
+              style={{ background: "none", border: "1px solid rgba(21,101,192,0.3)", cursor: "pointer", color: "#1565C0", padding: 8, display: "flex", alignItems: "center", justifyContent: "center" }}
             >
               {open ? <X size={20} /> : <Menu size={20} />}
             </button>
@@ -235,7 +242,7 @@ export default function Navbar() {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            style={{ overflow: "hidden", background: "#04111F", borderTop: "1px solid rgba(21,101,192,0.15)" }}
+            style={{ overflow: "hidden", background: "#F0F4F8", borderTop: "1px solid rgba(21,101,192,0.15)" }}
           >
             <div style={{ padding: "20px 24px", display: "flex", flexDirection: "column", gap: 0 }}>
               {links.map((l) => (
@@ -243,9 +250,9 @@ export default function Navbar() {
                   key={l.href}
                   href={l.href}
                   onClick={() => setOpen(false)}
-                  style={{ display: "flex", alignItems: "center", gap: 12, padding: "16px 0", borderBottom: "1px solid rgba(255,255,255,0.05)", fontSize: 12, letterSpacing: "2px", textTransform: "uppercase", color: "rgba(255,255,255,0.8)", textDecoration: "none", fontFamily: "var(--font-orbitron), sans-serif" }}
+                  style={{ display: "flex", alignItems: "center", gap: 12, padding: "16px 0", borderBottom: "1px solid rgba(21,101,192,0.08)", fontSize: 12, letterSpacing: "2px", textTransform: "uppercase", color: "rgba(10,30,60,0.75)", textDecoration: "none", fontFamily: "var(--font-orbitron), sans-serif" }}
                 >
-                  <span style={{ color: "#2196F3", display: "flex" }}>{l.icon}</span>
+                  <span style={{ color: "#1565C0", display: "flex" }}>{l.icon}</span>
                   {l.label}
                 </a>
               ))}
@@ -254,7 +261,7 @@ export default function Navbar() {
                   <button
                     key={l.code}
                     onClick={() => switchLocale(l.code)}
-                    style={{ fontSize: 10, letterSpacing: "1.5px", textTransform: "uppercase", padding: "8px 14px", background: "none", cursor: "pointer", border: l.code === locale ? "1px solid #2196F3" : "1px solid rgba(21,101,192,0.25)", color: l.code === locale ? "#2196F3" : "#B0BEC5", fontFamily: "var(--font-space), sans-serif" }}
+                    style={{ fontSize: 10, letterSpacing: "1.5px", textTransform: "uppercase", padding: "8px 14px", background: "none", cursor: "pointer", border: l.code === locale ? "1px solid #1565C0" : "1px solid rgba(21,101,192,0.2)", color: l.code === locale ? "#1565C0" : "rgba(10,30,60,0.5)", fontFamily: "var(--font-space), sans-serif" }}
                   >
                     {l.flag} {l.label}
                   </button>
