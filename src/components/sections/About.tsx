@@ -283,13 +283,13 @@ export default function About() {
           <div className="about-img-content">
             <div className="about-img-badge">
               <div className="about-img-badge-dot" />
-              Joinville · SC
+              Fabricado no Brasil · Presente na América Latina
             </div>
             <div className="about-img-title">
-              Estruturas que sustentam<br /><span>grandes eventos</span>
+              Da nossa fábrica para os maiores<br /><span>eventos da América Latina</span>
             </div>
             <div className="about-img-desc">
-              Do alumínio bruto ao produto final — controle total, qualidade garantida em cada peça fabricada em Joinville.
+              Projetamos, fabricamos e fornecemos estruturas em alumínio para clientes em mais de 8 países, mantendo o mesmo padrão de qualidade em cada entrega.
             </div>
             <a href="#contact" className="about-img-link">
               Conheça a Selum <ArrowRight size={12} />
