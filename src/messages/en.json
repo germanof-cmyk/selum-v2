@@ -1,0 +1,63 @@
+{
+  "nav": {
+    "products": "Products",
+    "projects": "Projects",
+    "about": "About Us",
+    "contact": "Contact",
+    "quote": "Request a Quote"
+  },
+  "hero": {
+    "badge": "Own manufacturing · Joinville, SC",
+    "tagline": "Excellence in Aluminium",
+    "desc": "Structural solutions for the biggest events in Latin America.\nBox Truss · Platforms · Custom Projects for your event.",
+    "cta_products": "See Products",
+    "cta_quote": "Request a Quote",
+    "cta_whatsapp": "WhatsApp",
+    "stat_line": "Q-15 to Q-50",
+    "stat_line_label": "Box Truss",
+    "stat_years": "5+",
+    "stat_years_label": "Years in market",
+    "stat_quality": "100%",
+    "stat_quality_label": "Premium aluminium",
+    "stat_city": "Joinville",
+    "stat_city_label": "Made in SC"
+  },
+  "products": {
+    "label": "Catalogue",
+    "title": "Our",
+    "title_highlight": "Products",
+    "boxtruss_name": "Box Truss",
+    "boxtruss_desc": "Lines Q-15, Q-30 and Q-50. Lightweight and resistant for any event scale.",
+    "praticaveis_name": "Stage Platforms",
+    "praticaveis_desc": "Elevated stages and floors with structural resistance and quick assembly.",
+    "bases_name": "Bases & Cubes",
+    "bases_desc": "Solid foundation for all structure configurations.",
+    "acessorios_name": "Accessories",
+    "acessorios_desc": "Sleeves, hinges, barriers and high-precision connectors.",
+    "see_line": "See line"
+  },
+  "about": {
+    "label": "Why Selum",
+    "title": "What sets us",
+    "title_highlight": "apart",
+    "item1_title": "Own manufacturing",
+    "item1_desc": "Full process control — from raw aluminium to the final product, in Joinville, SC.",
+    "item2_title": "Guaranteed delivery",
+    "item2_desc": "We understand events can't wait. On-time delivery is part of our product.",
+    "item3_title": "Premium material",
+    "item3_desc": "Carefully selected aluminium for lightness, durability and corrosion resistance.",
+    "quote": "Structures that support major events must be built by those who understand every detail of aluminium.",
+    "quote_author": "Selum · Joinville SC"
+  },
+  "cta": {
+    "title": "Ready for your",
+    "title_highlight": "next event",
+    "subtitle": "Talk to our team and get a quick quote.",
+    "whatsapp": "WhatsApp",
+    "quote": "Request a Quote"
+  },
+  "footer": {
+    "address": "Rua Tuiuti, 5.300 · Aventureiro · Joinville · SC",
+    "rights": "All rights reserved."
+  }
+}

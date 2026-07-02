@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run:*)",
+      "Bash(taskkill /PID 17300 /F)",
+      "Bash(rm -rf .next)",
+      "Bash(taskkill //PID 17300 //F)",
+      "Bash(taskkill //F //IM node.exe)",
+      "Bash(dir:*)",
+      "Bash(taskkill /F /IM node.exe)",
+      "Bash(rd /s /q .next)",
+      "Bash(cd:*)"
+    ]
+  }
+}

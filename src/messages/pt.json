@@ -1,0 +1,65 @@
+{
+  "nav": {
+    "products": "Produtos",
+    "projects": "Projetos",
+    "about": "Quem Somos",
+    "contact": "Contato",
+    "quote": "Solicitar Orçamento"
+  },
+  "hero": {
+    "badge": "Fabricação própria · Indústria Brasileira",
+    "tagline": "Excelência em Alumínio",
+    "desc": "Soluções em estruturas para os maiores eventos da América Latina.\nBox Truss · Praticáveis · Projetos Sob Medida para o seu evento.",
+    "cta_products": "Ver Produtos",
+    "cta_quote": "Solicitar Orçamento",
+    "cta_whatsapp": "WhatsApp",
+    "stat_line": "Linha Q-15 ao Q-50",
+    "stat_line_label": "Box Truss",
+    "stat_years": "5+",
+    "stat_years_label": "Anos de mercado",
+    "stat_quality": "100%",
+    "stat_quality_label": "Alumínio premium",
+    "stat_city": "Joinville",
+    "stat_city_label": "Fabricação SC"
+  },
+  "products": {
+    "label": "Catálogo",
+    "title": "Linha de",
+    "title_highlight": "Produtos",
+    "boxtruss_name": "Box Truss",
+    "boxtruss_desc": "Linhas Q-15, Q-30 e Q-50. Leveza e resistência para qualquer escala de evento.",
+    "praticaveis_name": "Praticáveis",
+    "praticaveis_desc": "Palcos e pisos elevados com resistência estrutural e montagem ágil.",
+    "bases_name": "Bases & Cubos",
+    "bases_desc": "Fundação sólida para todas as configurações de estrutura.",
+    "escadas_name": "Escadas",
+    "escadas_desc": "Escadas modulares em alumínio para acesso seguro a palcos e estruturas elevadas.",
+    "acessorios_name": "Acessórios",
+    "acessorios_desc": "Sleeves, dobradiças, gradis e conectores de alta precisão.",
+    "see_line": "Ver linha"
+  },
+  "about": {
+    "label": "Por que a Selum",
+    "title": "O que nos",
+    "title_highlight": "diferencia",
+    "item1_title": "Fabricação própria",
+    "item1_desc": "Controle total do processo — do alumínio bruto ao produto final, em Joinville, SC.",
+    "item2_title": "Pontualidade garantida",
+    "item2_desc": "Entendemos que eventos não esperam. Prazo cumprido é parte do nosso produto.",
+    "item3_title": "Material premium",
+    "item3_desc": "Alumínio selecionado para leveza, durabilidade e resistência à corrosão.",
+    "quote": "Estruturas que sustentam grandes eventos precisam ser feitas por quem entende cada detalhe do alumínio.",
+    "quote_author": "Selum · Joinville SC"
+  },
+  "cta": {
+    "title": "Pronto para o seu",
+    "title_highlight": "próximo evento",
+    "subtitle": "Fale com nosso time e receba um orçamento rápido.",
+    "whatsapp": "WhatsApp",
+    "quote": "Solicitar Orçamento"
+  },
+  "footer": {
+    "address": "Rua Tuiuti, 5.300 · Aventureiro · Joinville · SC",
+    "rights": "Todos os direitos reservados."
+  }
+}

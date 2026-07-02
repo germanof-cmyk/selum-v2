@@ -1,0 +1,63 @@
+{
+  "nav": {
+    "products": "Productos",
+    "projects": "Proyectos",
+    "about": "Quiénes Somos",
+    "contact": "Contacto",
+    "quote": "Solicitar Presupuesto"
+  },
+  "hero": {
+    "badge": "Fabricación propia · Joinville, SC",
+    "tagline": "Excelencia en Aluminio",
+    "desc": "Soluciones en estructuras para los mayores eventos de América Latina.\nBox Truss · Plataformas · Proyectos a Medida para tu evento.",
+    "cta_products": "Ver Productos",
+    "cta_quote": "Solicitar Presupuesto",
+    "cta_whatsapp": "WhatsApp",
+    "stat_line": "Q-15 al Q-50",
+    "stat_line_label": "Box Truss",
+    "stat_years": "5+",
+    "stat_years_label": "Años en el mercado",
+    "stat_quality": "100%",
+    "stat_quality_label": "Aluminio premium",
+    "stat_city": "Joinville",
+    "stat_city_label": "Fabricación SC"
+  },
+  "products": {
+    "label": "Catálogo",
+    "title": "Línea de",
+    "title_highlight": "Productos",
+    "boxtruss_name": "Box Truss",
+    "boxtruss_desc": "Líneas Q-15, Q-30 y Q-50. Ligereza y resistencia para cualquier escala de evento.",
+    "praticaveis_name": "Plataformas",
+    "praticaveis_desc": "Escenarios y pisos elevados con resistencia estructural y montaje ágil.",
+    "bases_name": "Bases & Cubos",
+    "bases_desc": "Fundación sólida para todas las configuraciones de estructura.",
+    "acessorios_name": "Accesorios",
+    "acessorios_desc": "Sleeves, bisagras, vallas y conectores de alta precisión.",
+    "see_line": "Ver línea"
+  },
+  "about": {
+    "label": "Por qué Selum",
+    "title": "Lo que nos",
+    "title_highlight": "diferencia",
+    "item1_title": "Fabricación propia",
+    "item1_desc": "Control total del proceso — del aluminio bruto al producto final, en Joinville, SC.",
+    "item2_title": "Puntualidad garantizada",
+    "item2_desc": "Entendemos que los eventos no esperan. El plazo cumplido es parte de nuestro producto.",
+    "item3_title": "Material premium",
+    "item3_desc": "Aluminio cuidadosamente seleccionado para ligereza, durabilidad y resistencia a la corrosión.",
+    "quote": "Las estructuras que sostienen grandes eventos deben ser fabricadas por quienes entienden cada detalle del aluminio.",
+    "quote_author": "Selum · Joinville SC"
+  },
+  "cta": {
+    "title": "¿Listo para tu",
+    "title_highlight": "próximo evento",
+    "subtitle": "Habla con nuestro equipo y recibe un presupuesto rápido.",
+    "whatsapp": "WhatsApp",
+    "quote": "Solicitar Presupuesto"
+  },
+  "footer": {
+    "address": "Rua Tuiuti, 5.300 · Aventureiro · Joinville · SC",
+    "rights": "Todos los derechos reservados."
+  }
+}
