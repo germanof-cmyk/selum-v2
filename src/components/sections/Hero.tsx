@@ -260,15 +260,7 @@ export default function Hero() {
             </span>
           </motion.div>
 
-          <motion.div {...fadeUp(0.2)} className="hero-logo" style={{ marginBottom: 28 }}>
-            <Image
-              src="/images/selum-logo-full.png"
-              alt="Selum — Excelência em Alumínio"
-              width={320}
-              height={220}
-              priority
-            />
-          </motion.div>
+          {/* Logo removida da hero */}
 
           <motion.div {...fadeUp(0.3)} style={{ marginBottom: 40 }}>
             {/* Frase principal impacto */}

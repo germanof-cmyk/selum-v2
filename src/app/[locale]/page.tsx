@@ -1,3 +1,4 @@
+import SplashScreen from "@/components/ui/SplashScreen";
 import Navbar from "@/components/layout/Navbar";
 import Hero from "@/components/sections/Hero";
 import MarqueeStrip from "@/components/sections/MarqueeStrip";
@@ -11,6 +12,7 @@ import Footer from "@/components/layout/Footer";
 export default function Home() {
   return (
     <main>
+      <SplashScreen />
       <Navbar />
       <Hero />
       <MarqueeStrip />
