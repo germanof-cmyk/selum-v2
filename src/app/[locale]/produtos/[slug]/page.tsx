@@ -1,18 +1,11 @@
 import type { Metadata } from "next";
 import { supabase, fetchProductImages, type Produto } from "@/lib/supabase";
+import { STATIC_PRODUCTS } from "@/lib/db/products";
 import ProductDetailPage from "./ProductDetailPage";
 
-const FALLBACK: Record<string, Produto> = {
-  "box-truss": {
-    id: "box-truss",
-    slug: "box-truss",
-    name: "Box Truss",
-    category: "Box Truss",
-    tag: "Q40",
-    description:
-      "Estrutura treliçada de alumínio com seção quadrada, projetada para suportar cargas elevadas em eventos e instalações de grande porte. Alta rigidez e leveza são os diferenciais desta linha.",
-  },
-};
+function getFallback(slug: string): Produto | null {
+  return STATIC_PRODUCTS.find((p) => p.slug === slug) ?? null;
+}
 
 export async function generateMetadata({
   params,
@@ -20,12 +13,11 @@ export async function generateMetadata({
   params: Promise<{ locale: string; slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const product = FALLBACK[slug];
+  const product = getFallback(slug);
   return {
     title: `${product?.name ?? slug} — Selum`,
     description:
-      product?.description ??
-      "Estruturas de alumínio para grandes eventos.",
+      product?.description ?? "Estruturas de alumínio para grandes eventos.",
   };
 }
 
@@ -36,17 +28,17 @@ export default async function Page({
 }) {
   const { slug } = await params;
 
-  // Fetch product data
+  // Fetch product data from Supabase (table: products)
   let product: Produto | null = null;
   if (process.env.NEXT_PUBLIC_SUPABASE_URL) {
     const { data } = await supabase
-      .from("produtos")
-      .select("*")
+      .from("products")
+      .select("id, slug, name, category, tag, description")
       .eq("slug", slug)
       .single();
     product = data ?? null;
   }
-  if (!product) product = FALLBACK[slug] ?? null;
+  if (!product) product = getFallback(slug);
 
   // Fetch images from Supabase Storage
   const { hero, gallery } = await fetchProductImages(slug);

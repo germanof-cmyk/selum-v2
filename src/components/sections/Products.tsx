@@ -10,6 +10,7 @@ const products = [
     nameKey: "boxtruss_name",
     descKey: "boxtruss_desc",
     image: "/images/products/box-truss.png",
+    slug: "torre-box-truss",
   },
   {
     num: "02",
@@ -18,6 +19,7 @@ const products = [
     nameKey: "praticaveis_name",
     descKey: "praticaveis_desc",
     image: "/images/products/praticaveis.png",
+    slug: "praticaveis",
   },
   {
     num: "03",
@@ -26,6 +28,7 @@ const products = [
     nameKey: "bases_name",
     descKey: "bases_desc",
     image: "/images/products/base-cubos.png",
+    slug: "cubos",
   },
   {
     num: "04",
@@ -34,6 +37,7 @@ const products = [
     nameKey: "escadas_name",
     descKey: "escadas_desc",
     image: "/images/products/escadas.png",
+    slug: "escadas",
   },
 ];
 
@@ -272,7 +276,7 @@ export default function Products() {
                 <div className="acc-tag">{p.tag}</div>
                 <div className="acc-name">{t(p.nameKey as any)}</div>
                 <div className="acc-desc">{t(p.descKey as any)}</div>
-                <a href="#contact" className="acc-link">
+                <a href={`/pt/produtos/${p.slug}`} className="acc-link">
                   {t("see_line")} <span className="acc-arr">→</span>
                 </a>
               </div>
