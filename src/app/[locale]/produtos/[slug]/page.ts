@@ -16,10 +16,10 @@ export default function ProductPage() {
 
   if (!product) {
     return (
-      <div style={{ background: "#071E38", minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff" }}>
+      <div style={{ background: "#071E38", minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: 18 }}>
         Produto não encontrado.
       </div>
-    );
+    ) as React.ReactNode;
   }
 
   return (
