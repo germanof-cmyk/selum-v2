@@ -1,14 +1,18 @@
 import { createClient } from "@supabase/supabase-js";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? "";
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export function createPublicClient() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!url || !key) throw new Error("Supabase is not configured.");
+  return createClient(url, key);
+}
 
 // Server-side client with service role (for admin Server Actions)
 export function createServiceClient() {
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY ?? supabaseAnonKey;
-  return createClient(supabaseUrl, serviceKey);
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY ?? process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!url || !serviceKey) throw new Error("Supabase is not configured.");
+  return createClient(url, serviceKey);
 }
 
 /* ─── TYPES ──────────────────────────────────────────────────────────────── */
@@ -36,7 +40,7 @@ export type ProdutoImagem = {
 const BUCKET = "produto-imagens";
 
 export function getImagePublicUrl(storagePath: string): string {
-  const { data } = supabase.storage.from(BUCKET).getPublicUrl(storagePath);
+  const { data } = createPublicClient().storage.from(BUCKET).getPublicUrl(storagePath);
   return data.publicUrl;
 }
 
@@ -44,11 +48,11 @@ export async function fetchProductImages(slug: string): Promise<{
   hero: string | null;
   gallery: string[];
 }> {
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
     return { hero: null, gallery: [] };
   }
 
-  const { data } = await supabase
+  const { data } = await createPublicClient()
     .from("produto_imagens")
     .select("*")
     .eq("produto_slug", slug)

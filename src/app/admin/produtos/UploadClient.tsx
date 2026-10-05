@@ -404,7 +404,7 @@ export default function UploadClient() {
           Gestão de imagens
         </h1>
         <p style={{ fontSize: 13, color: "#444", marginTop: 8, lineHeight: 1.6 }}>
-          Clique em "Carregar imagens" em cada produto para ver e gerenciar hero + galeria.
+          Clique em &quot;Carregar imagens&quot; em cada produto para ver e gerenciar hero + galeria.
           As imagens são armazenadas no Supabase Storage (bucket{" "}
           <code
             style={{

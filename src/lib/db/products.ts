@@ -1,4 +1,4 @@
-import { supabase, type Produto } from "@/lib/supabase";
+import { createPublicClient, type Produto } from "@/lib/supabase";
 
 /* ─── STATIC FALLBACK ────────────────────────────────────────────────────── */
 // Used when Supabase is not configured or the table is empty.
@@ -58,11 +58,11 @@ export async function getProducts(): Promise<{
   products: Produto[];
   fromDb: boolean;
 }> {
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
     return { products: STATIC_PRODUCTS, fromDb: false };
   }
 
-  const { data, error } = await supabase
+  const { data, error } = await createPublicClient()
     .from("products")
     .select("id, slug, name, category, tag, description")
     .eq("published", true)
