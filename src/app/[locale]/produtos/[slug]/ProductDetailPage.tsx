@@ -204,7 +204,7 @@ export default function ProductDetailPage({
   const productTag = product?.tag ?? "Q40";
   const productDescription =
     product?.description ??
-    "Estrutura treliçada de alumínio com seção quadrada, projetada para suportar cargas elevadas em eventos e instalações de grande porte. Alta rigidez e leveza são os diferenciais desta linha.";
+    "Estrutura treliçada de alumínio com seção quadrada, projetada para suportar cargas elevadas em eventos e projetos de grande porte. Alta rigidez e leveza são os diferenciais desta linha.";
 
   return (
     <>

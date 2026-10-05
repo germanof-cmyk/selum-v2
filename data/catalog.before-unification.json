@@ -1,0 +1,590 @@
+{
+  "torre-box-truss": {
+    "slug": "torre-box-truss",
+    "category": "estrutural",
+    "name": {
+      "pt": "Torre Box Truss",
+      "es": "Torre Box Truss",
+      "en": "Torre Box Truss"
+    },
+    "description": {
+      "pt": "Estrutura modular de alumínio para suporte de iluminação, som e cenografia em eventos.",
+      "es": "Estructura modular de aluminio para iluminación, sonido y escenografía en eventos.",
+      "en": "Modular aluminium structure for lighting, sound and scenic applications at events."
+    },
+    "status": "approved",
+    "active": true,
+    "showOnHome": true,
+    "homeOrder": null,
+    "homeImage": null,
+    "models": [
+      {
+        "name": "Torres de 0,5m",
+        "image": "/images/products/icons/Ícone isométrico de torre treliçada.png"
+      },
+      {
+        "name": "Torres de 1m",
+        "dimensions": "1m",
+        "image": "/images/products/icons/Ícone isométrico de torre treliçada.png"
+      },
+      {
+        "name": "Torres de 1,5m",
+        "image": "/images/products/icons/Ícone isométrico de torre treliçada.png"
+      },
+      {
+        "name": "Torres de 2m",
+        "image": "/images/products/Torre de 1,00 metros.jpg"
+      },
+      {
+        "name": "Torres de 2,5m",
+        "image": "/images/products/icons/Ícone isométrico de torre treliçada.png"
+      },
+      {
+        "name": "Torres de 3m",
+        "image": "/images/products/Torre de 1,00 metros.jpg"
+      },
+      {
+        "name": "Torres de 3,5m",
+        "image": "/images/products/icons/Ícone isométrico de torre treliçada.png"
+      },
+      {
+        "name": "Torres de 4m",
+        "image": "/images/products/icons/Ícone isométrico de torre treliçada.png"
+      },
+      {
+        "name": "Torres de 4,5m",
+        "image": "/images/products/icons/Ícone isométrico de torre treliçada.png"
+      },
+      {
+        "name": "Torres de 5m",
+        "image": "/images/products/icons/Ícone isométrico de torre treliçada.png"
+      },
+      {
+        "name": "Torres de 5,5m",
+        "image": "/images/products/icons/Ícone isométrico de torre treliçada.png"
+      },
+      {
+        "name": "Torres de 6m",
+        "image": "/images/products/icons/Ícone isométrico de torre treliçada.png"
+      }
+    ],
+    "modelGroups": [
+      {
+        "id": "legacy-models",
+        "name": {
+          "pt": "Linha Pesada P25 | P30 | P50 | P50X30 | P66X36"
+        },
+        "models": [
+          {
+            "name": "Torres de 0,5m",
+            "image": "/images/products/icons/Ícone isométrico de torre treliçada.png"
+          },
+          {
+            "name": "Torres de 1m",
+            "dimensions": "1m",
+            "image": "/images/products/icons/Ícone isométrico de torre treliçada.png"
+          },
+          {
+            "name": "Torres de 1,5m",
+            "image": "/images/products/icons/Ícone isométrico de torre treliçada.png"
+          },
+          {
+            "name": "Torres de 2m",
+            "image": "/images/products/Torre de 1,00 metros.jpg"
+          },
+          {
+            "name": "Torres de 2,5m",
+            "image": "/images/products/icons/Ícone isométrico de torre treliçada.png"
+          },
+          {
+            "name": "Torres de 3m",
+            "image": "/images/products/Torre de 1,00 metros.jpg"
+          },
+          {
+            "name": "Torres de 3,5m",
+            "image": "/images/products/icons/Ícone isométrico de torre treliçada.png"
+          },
+          {
+            "name": "Torres de 4m",
+            "image": "/images/products/icons/Ícone isométrico de torre treliçada.png"
+          },
+          {
+            "name": "Torres de 4,5m",
+            "image": "/images/products/icons/Ícone isométrico de torre treliçada.png"
+          },
+          {
+            "name": "Torres de 5m",
+            "image": "/images/products/icons/Ícone isométrico de torre treliçada.png"
+          },
+          {
+            "name": "Torres de 5,5m",
+            "image": "/images/products/icons/Ícone isométrico de torre treliçada.png"
+          },
+          {
+            "name": "Torres de 6m",
+            "image": "/images/products/icons/Ícone isométrico de torre treliçada.png"
+          }
+        ]
+      }
+    ],
+    "heroImages": [
+      "/images/products/box-truss.png",
+      "/images/products/Torre de 1,00 metros.jpg"
+    ],
+    "benefits": [
+      {
+        "text": {
+          "pt": "Estrutura modular",
+          "es": "Estructura modular",
+          "en": "Modular structure"
+        },
+        "icon": "Layers"
+      },
+      {
+        "text": {
+          "pt": "Suporte para iluminação",
+          "es": "Soporte para iluminación",
+          "en": "Lighting support"
+        },
+        "icon": "Lightbulb"
+      },
+      {
+        "text": {
+          "pt": "Uso em cenografia",
+          "es": "Uso en escenografía",
+          "en": "Scenic applications"
+        },
+        "icon": "Box"
+      },
+      {
+        "text": {
+          "pt": "Fabricação própria",
+          "es": "Fabricación propia",
+          "en": "In-house manufacturing"
+        },
+        "icon": "Factory"
+      }
+    ],
+    "images": {
+      "main": "/images/products/box-truss.png",
+      "gallery": [
+        "/images/products/Torre de 1,00 metros.jpg"
+      ],
+      "details": [
+        "/images/products/box-truss.png",
+        "/images/products/Torre de 1,00 metros.jpg",
+        "/images/products/Torre de 5,00 metros p30.jpeg"
+      ]
+    },
+    "application": {
+      "image": "/images/projects/luan-santana-1.png",
+      "title": {
+        "pt": "Estruturas que ganham grandes palcos",
+        "es": "Estructuras para grandes escenarios",
+        "en": "Structures for major stages"
+      },
+      "text": {
+        "pt": "Soluções para iluminação, som e cenografia em eventos.",
+        "es": "Soluciones para iluminación, sonido y escenografía en eventos.",
+        "en": "Solutions for lighting, sound and scenic design at events."
+      }
+    },
+    "technicalDrawing": "/images/products/torres/Módulo de Treliça Isométrica Cotado.png",
+    "relatedProducts": [
+      "sleeves",
+      "cubos"
+    ]
+  },
+  "cubos": {
+    "slug": "cubos",
+    "category": "estrutural",
+    "name": {
+      "pt": "Cubos",
+      "es": "Cubos",
+      "en": "Cubes"
+    },
+    "description": {
+      "pt": "Cubos modulares de alumínio para composições de cenografia e estruturas de eventos.",
+      "es": "Cubos modulares de aluminio para escenografía y estructuras de eventos.",
+      "en": "Modular aluminium cubes for scenic compositions and event structures."
+    },
+    "status": "review",
+    "active": true,
+    "showOnHome": true,
+    "homeOrder": 2,
+    "homeImage": "/images/products/cubo.png",
+    "models": [
+      {
+        "name": "50cm"
+      },
+      {
+        "name": "75cm"
+      },
+      {
+        "name": "100cm"
+      },
+      {
+        "name": "Custom"
+      }
+    ],
+    "modelGroups": [
+      {
+        "id": "legacy-models",
+        "models": [
+          {
+            "name": "50cm"
+          },
+          {
+            "name": "75cm"
+          },
+          {
+            "name": "100cm"
+          },
+          {
+            "name": "Custom"
+          }
+        ]
+      }
+    ],
+    "heroImages": [
+      "/images/products/Cubo 4 faces.jpeg",
+      "/images/products/cubo.png"
+    ],
+    "benefits": [
+      {
+        "text": {
+          "pt": "Composição estrutural",
+          "es": "Composición estructural",
+          "en": "Structural compositions"
+        },
+        "icon": "Box"
+      },
+      {
+        "text": {
+          "pt": "Uso em cenografia",
+          "es": "Uso en escenografía",
+          "en": "Scenic applications"
+        },
+        "icon": "Layers"
+      },
+      {
+        "text": {
+          "pt": "Fabricação própria",
+          "es": "Fabricación propia",
+          "en": "In-house manufacturing"
+        },
+        "icon": "Factory"
+      }
+    ],
+    "images": {
+      "main": "/images/products/Cubo 4 faces.jpeg",
+      "gallery": [
+        "/images/products/cubo.png"
+      ],
+      "details": [
+        "/images/products/Cubo 4 faces.jpeg"
+      ]
+    },
+    "relatedProducts": [
+      "torre-box-truss",
+      "bases"
+    ]
+  },
+  "sleeves": {
+    "slug": "sleeves",
+    "category": "acessorios",
+    "name": {
+      "pt": "Sleeves",
+      "es": "Sleeves",
+      "en": "Sleeves"
+    },
+    "description": {
+      "pt": "Acessórios para montagem e movimentação de estruturas Box Truss.",
+      "es": "Accesorios para montar y mover estructuras Box Truss.",
+      "en": "Accessories for assembling and moving Box Truss structures."
+    },
+    "status": "review",
+    "active": true,
+    "showOnHome": true,
+    "homeOrder": null,
+    "homeImage": "/images/products/sleaves.png",
+    "heroImages": [
+      "/images/products/Sleeve p30 e p50.jpeg",
+      "/images/products/sleaves.png"
+    ],
+    "benefits": [
+      {
+        "text": {
+          "pt": "Acessório para Box Truss",
+          "es": "Accesorio para Box Truss",
+          "en": "Box Truss accessory"
+        },
+        "icon": "Box"
+      },
+      {
+        "text": {
+          "pt": "Integração estrutural",
+          "es": "Integración estructural",
+          "en": "Structural integration"
+        },
+        "icon": "Layers"
+      },
+      {
+        "text": {
+          "pt": "Fabricação própria",
+          "es": "Fabricación propia",
+          "en": "In-house manufacturing"
+        },
+        "icon": "Factory"
+      }
+    ],
+    "images": {
+      "main": "/images/products/Sleeve p30 e p50.jpeg",
+      "gallery": [
+        "/images/products/sleaves.png"
+      ],
+      "details": [
+        "/images/products/Sleeve p30 e p50.jpeg"
+      ]
+    },
+    "relatedProducts": [
+      "torre-box-truss",
+      "cubos"
+    ]
+  },
+  "escadas": {
+    "slug": "escadas",
+    "category": "acesso",
+    "name": {
+      "pt": "Escadas",
+      "es": "Escaleras",
+      "en": "Stairs"
+    },
+    "description": {
+      "pt": "Escadas modulares em alumínio para acesso a palcos e estruturas elevadas.",
+      "es": "Escaleras modulares de aluminio para acceder a escenarios y estructuras elevadas.",
+      "en": "Modular aluminium stairs for access to stages and elevated structures."
+    },
+    "status": "review",
+    "active": true,
+    "showOnHome": true,
+    "homeOrder": null,
+    "homeImage": "/images/products/escadas.png",
+    "models": [
+      {
+        "name": "3 degraus"
+      },
+      {
+        "name": "6 degraus"
+      },
+      {
+        "name": "9 degraus"
+      },
+      {
+        "name": "Custom"
+      }
+    ],
+    "modelGroups": [
+      {
+        "id": "legacy-models",
+        "models": [
+          {
+            "name": "3 degraus"
+          },
+          {
+            "name": "6 degraus"
+          },
+          {
+            "name": "9 degraus"
+          },
+          {
+            "name": "Custom"
+          }
+        ]
+      }
+    ],
+    "heroImages": [
+      "/images/products/cccescadas.png",
+      "/images/products/escadas.png"
+    ],
+    "benefits": [
+      {
+        "text": {
+          "pt": "Acesso a palcos",
+          "es": "Acceso a escenarios",
+          "en": "Stage access"
+        },
+        "icon": "Layers"
+      },
+      {
+        "text": {
+          "pt": "Estrutura em alumínio",
+          "es": "Estructura de aluminio",
+          "en": "Aluminium structure"
+        },
+        "icon": "Box"
+      },
+      {
+        "text": {
+          "pt": "Fabricação própria",
+          "es": "Fabricación propia",
+          "en": "In-house manufacturing"
+        },
+        "icon": "Factory"
+      }
+    ],
+    "images": {
+      "main": "/images/products/cccescadas.png",
+      "gallery": [
+        "/images/products/escadas.png"
+      ]
+    },
+    "relatedProducts": [
+      "bases",
+      "torre-box-truss"
+    ]
+  },
+  "bases": {
+    "slug": "bases",
+    "category": "estrutural",
+    "name": {
+      "pt": "Bases",
+      "es": "Bases",
+      "en": "Bases"
+    },
+    "description": {
+      "pt": "Bases de alumínio para montagem de estruturas de eventos.",
+      "es": "Bases de aluminio para montar estructuras de eventos.",
+      "en": "Aluminium bases for assembling event structures."
+    },
+    "status": "review",
+    "active": true,
+    "showOnHome": true,
+    "homeOrder": null,
+    "homeImage": "/images/products/base-tubular/base_tubular.png",
+    "models": [
+      {
+        "name": "BASE COM REGULAGEM",
+        "image": "/images/products/base-tubular/Ilustração Técnica de Painel Treliçado.png"
+      },
+      {
+        "name": "BASE REFORÇADA",
+        "image": "/images/products/icons/Ilustração Técnica de Painel Treliçado.png"
+      },
+      {
+        "name": "BASE RETANGULAR",
+        "image": "/images/products/icons/Ilustração Técnica de Painel Treliçado.png"
+      },
+      {
+        "name": "BASE TUBULAR - PADRÃO",
+        "image": "/images/products/icons/Ilustração Técnica de Painel Treliçado.png"
+      },
+      {
+        "name": "BASE COM REGULAGEM",
+        "image": "/images/products/icons/Ilustração Técnica de Painel Treliçado.png"
+      },
+      {
+        "name": "BASE REFORÇADA"
+      },
+      {
+        "name": "BASE RETANGULAR",
+        "image": "/images/products/icons/Ilustração Técnica de Painel Treliçado.png"
+      },
+      {
+        "name": "BASE TUBULAR - PADRÃO",
+        "image": "/images/products/icons/Ilustração Técnica de Painel Treliçado.png"
+      }
+    ],
+    "modelGroups": [
+      {
+        "id": "27e36901-f70b-47b9-a8e2-010e62b25f18",
+        "name": {
+          "pt": "Linha Pesada  P25 | P30 | P50 | P50X30 | P66X36"
+        },
+        "models": [
+          {
+            "name": "BASE COM REGULAGEM",
+            "image": "/images/products/base-tubular/Ilustração Técnica de Painel Treliçado.png"
+          },
+          {
+            "name": "BASE REFORÇADA",
+            "image": "/images/products/icons/Ilustração Técnica de Painel Treliçado.png"
+          },
+          {
+            "name": "BASE RETANGULAR",
+            "image": "/images/products/icons/Ilustração Técnica de Painel Treliçado.png"
+          },
+          {
+            "name": "BASE TUBULAR - PADRÃO",
+            "image": "/images/products/icons/Ilustração Técnica de Painel Treliçado.png"
+          }
+        ]
+      },
+      {
+        "id": "22a17cb6-70b5-4aa4-aab8-51d5c6923246",
+        "name": {
+          "pt": "Linha Leve   L15 | L20 | L25 | L30"
+        },
+        "models": [
+          {
+            "name": "BASE COM REGULAGEM",
+            "image": "/images/products/icons/Ilustração Técnica de Painel Treliçado.png"
+          },
+          {
+            "name": "BASE REFORÇADA"
+          },
+          {
+            "name": "BASE RETANGULAR",
+            "image": "/images/products/icons/Ilustração Técnica de Painel Treliçado.png"
+          },
+          {
+            "name": "BASE TUBULAR - PADRÃO",
+            "image": "/images/products/icons/Ilustração Técnica de Painel Treliçado.png"
+          }
+        ]
+      }
+    ],
+    "heroImages": [
+      "/images/products/base-tubular/base_tubular.png"
+    ],
+    "modelIllustration": "/images/products/base-tubular/Ilustração Técnica de Painel Treliçado.png",
+    "benefits": [
+      {
+        "text": {
+          "pt": "Componente estrutural",
+          "es": "Componente estructural",
+          "en": "Structural component"
+        },
+        "icon": "Box"
+      },
+      {
+        "text": {
+          "pt": "Montagem de estruturas",
+          "es": "Montaje de estructuras",
+          "en": "Structure assembly"
+        },
+        "icon": "Layers"
+      },
+      {
+        "text": {
+          "pt": "Fabricação própria",
+          "es": "Fabricación propia",
+          "en": "In-house manufacturing"
+        },
+        "icon": "Factory"
+      }
+    ],
+    "images": {
+      "main": "/images/products/base-tubular/base_tubular.png",
+      "details": [
+        "/images/products/base-tubular/Captura de tela 2026-10-01 165917.png",
+        "/images/products/base-tubular/Captura de tela 2026-10-01 165930.png"
+      ]
+    },
+    "technicalDrawing": "/images/products/icons/Ilustração Técnica de Painel Treliçado.png",
+    "relatedProducts": [
+      "cubos",
+      "torre-box-truss"
+    ]
+  }
+}

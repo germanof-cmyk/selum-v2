@@ -1,0 +1,80 @@
+{
+  "Barretos": {
+    "id": "de86efe0-01d8-40a3-a01f-e696c54fd2ec",
+    "slug": "Barretos",
+    "status": "approved",
+    "active": true,
+    "name": {
+      "pt": "Barretos",
+      "es": "Barretos",
+      "en": "Barretos"
+    },
+    "category": {
+      "pt": "Show Nacional",
+      "es": "Show ",
+      "en": "Show Nacional"
+    },
+    "location": {
+      "city": "Barretos ",
+      "state": "SP",
+      "country": ""
+    },
+    "coverImage": "/images/projects/show-de-country-sob-ceu-azul-intenso-4bed9d93.png",
+    "coverImageValidated": true,
+    "showOnHome": true,
+    "homeOrder": 1,
+    "projectsOrder": 1
+  },
+  "festa-nacional-cebola": {
+    "id": "8d77eaa1-c9a6-47e7-99eb-4d1e2cadb279",
+    "slug": "festa-nacional-cebola",
+    "status": "approved",
+    "active": true,
+    "name": {
+      "pt": "Festa Nacional da Cebola",
+      "es": "Festa Nacional da Cebola",
+      "en": "Festa Nacional da Cebola"
+    },
+    "category": {
+      "pt": "Festa Nacional",
+      "es": "",
+      "en": ""
+    },
+    "location": {
+      "city": "",
+      "state": "",
+      "country": ""
+    },
+    "coverImage": "/images/projects/festival-nacional-da-cebola-em-ituporanga-ac5b3862.png",
+    "coverImageValidated": true,
+    "showOnHome": true,
+    "homeOrder": null,
+    "projectsOrder": null
+  },
+  "verao-mais-guaratuba": {
+    "id": "e5c2c82d-c9e2-4cf2-9675-ac02dbe5e4db",
+    "slug": "verao-mais-guaratuba",
+    "status": "approved",
+    "active": true,
+    "name": {
+      "pt": "Verão Mais Guaratuba",
+      "es": "Verão Mais Guaratuba",
+      "en": "Verão Mais Guaratuba"
+    },
+    "category": {
+      "pt": "Show — Guaratuba · PR",
+      "es": "",
+      "en": ""
+    },
+    "location": {
+      "city": "",
+      "state": "",
+      "country": ""
+    },
+    "coverImage": "/images/projects/festival-festa-do-pirao-a-beira-mar-e97dd4f1.png",
+    "coverImageValidated": true,
+    "showOnHome": true,
+    "homeOrder": null,
+    "projectsOrder": null
+  }
+}

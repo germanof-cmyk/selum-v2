@@ -6,6 +6,29 @@
     "contact": "Contact",
     "quote": "Request a Quote"
   },
+  "projectsPage": {
+    "home": "Home",
+    "eyebrow": "Projects",
+    "breadcrumbLabel": "Breadcrumb",
+    "title": "Structures that are part of great experiences.",
+    "intro": "Structural aluminium components manufactured by Selum and featured in shows, trade fairs, corporate events and major productions across Latin America.",
+    "filterLabel": "Filter projects",
+    "all": "All",
+    "search": "Search projects...",
+    "noResults": "No projects found for this search.",
+    "empty": "New projects will be here soon.",
+    "emptyDescription": "We are preparing verified project records and images to present each project accurately.",
+    "ctaEyebrow": "Structures for major projects",
+    "ctaTitle": "Need aluminium components for your next project?",
+    "ctaDescription": "Talk to our team and find the right structural solution for your event.",
+    "quote": "Request a quote",
+    "benefitManufacturing": "Own manufacturing",
+    "benefitManufacturingDescription": "Quality control at every stage.",
+    "benefitCustom": "Custom projects",
+    "benefitCustomDescription": "Components tailored to your project.",
+    "benefitLatam": "LATAM service",
+    "benefitLatamDescription": "Supply to multiple countries."
+  },
   "hero": {
     "badge": "Own manufacturing · Joinville, SC",
     "tagline": "Excellence in Aluminium",
@@ -26,15 +49,22 @@
     "label": "Catalogue",
     "title": "Our",
     "title_highlight": "Products",
+    "light_line": "Light Line",
+    "heavy_line": "Heavy Line",
     "boxtruss_name": "Box Truss",
     "boxtruss_desc": "Lines Q-15, Q-30 and Q-50. Lightweight and resistant for any event scale.",
     "praticaveis_name": "Stage Platforms",
-    "praticaveis_desc": "Elevated stages and floors with structural resistance and quick assembly.",
+    "praticaveis_desc": "Aluminium platforms for elevated surfaces, engineered for structural strength.",
     "bases_name": "Bases & Cubes",
     "bases_desc": "Solid foundation for all structure configurations.",
     "acessorios_name": "Accessories",
     "acessorios_desc": "Sleeves, hinges, barriers and high-precision connectors.",
-    "see_line": "See line"
+    "see_line": "See line",
+    "filter_label": "Filter products",
+    "all": "All",
+    "view_product": "View product",
+    "view_all": "View all products",
+    "empty": "Explore every solution in the catalogue."
   },
   "about": {
     "label": "Why Selum",
@@ -56,8 +86,41 @@
     "whatsapp": "WhatsApp",
     "quote": "Request a Quote"
   },
+  "productDetail": {
+    "home": "Home",
+    "products": "Products",
+    "categories": {
+      "estrutural": "Structural Line",
+      "acessorios": "Accessories Line",
+      "acesso": "Access Line"
+    },
+    "quote": "Request a quote",
+    "specialist": "Talk to a specialist",
+    "galleryLabel": "Gallery of",
+    "previousImage": "Previous image",
+    "nextImage": "Next image",
+    "showImage": "Show image",
+    "breadcrumbLabel": "Breadcrumb",
+    "benefitsLabel": "Benefits",
+    "informationLabel": "Product information",
+    "specsTitle": "Technical specifications",
+    "modelsTitle": "Available models",
+    "applicationLabel": "Application",
+    "applicationCta": "View projects",
+    "constructionLabel": "Construction details",
+    "technicalLabel": "Technical drawing",
+    "technicalTitle": "Dimensions and structure",
+    "downloadTechnical": "Download technical sheet",
+    "relatedLabel": "Related products",
+    "relatedTitle": "Explore more"
+  },
   "footer": {
     "address": "Rua Tuiuti, 5.300 · Aventureiro · Joinville · SC",
     "rights": "All rights reserved."
+  },
+  "workWithUs": {
+    "title": "Join our team",
+    "subtitle": "Open positions · Joinville, SC · Grow with us",
+    "button": "Send your résumé"
   }
 }

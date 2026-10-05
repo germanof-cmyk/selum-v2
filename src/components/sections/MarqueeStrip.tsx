@@ -1,5 +1,5 @@
 const items = [
-  "Box Truss", "Palcos Profissionais", "Praticáveis",
+  "Box Truss", "Componentes para Palcos", "Praticáveis",
   "Sleeves & Conectores", "Gradil", "Bases & Cubos",
   "Dobradiças", "Excelência em Alumínio",
 ];

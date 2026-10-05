@@ -6,6 +6,29 @@
     "contact": "Contacto",
     "quote": "Solicitar Presupuesto"
   },
+  "projectsPage": {
+    "home": "Inicio",
+    "eyebrow": "Proyectos",
+    "breadcrumbLabel": "Ruta de navegación",
+    "title": "Estructuras que forman parte de grandes experiencias.",
+    "intro": "Componentes estructurales de aluminio fabricados por Selum y presentes en shows, ferias, eventos corporativos y grandes producciones en toda América Latina.",
+    "filterLabel": "Filtrar proyectos",
+    "all": "Todos",
+    "search": "Buscar proyectos...",
+    "noResults": "No se encontraron proyectos para esta búsqueda.",
+    "empty": "Próximamente habrá nuevos proyectos aquí.",
+    "emptyDescription": "Estamos preparando registros e imágenes validados para presentar cada proyecto con precisión.",
+    "ctaEyebrow": "Estructuras para grandes proyectos",
+    "ctaTitle": "¿Necesita componentes de aluminio para su próximo proyecto?",
+    "ctaDescription": "Hable con nuestro equipo y encuentre la mejor solución estructural para su evento.",
+    "quote": "Solicitar presupuesto",
+    "benefitManufacturing": "Fabricación propia",
+    "benefitManufacturingDescription": "Control de calidad en todas las etapas.",
+    "benefitCustom": "Proyectos personalizados",
+    "benefitCustomDescription": "Componentes a medida para su proyecto.",
+    "benefitLatam": "Atención LATAM",
+    "benefitLatamDescription": "Suministro para diversos países."
+  },
   "hero": {
     "badge": "Fabricación propia · Joinville, SC",
     "tagline": "Excelencia en Aluminio",
@@ -26,15 +49,22 @@
     "label": "Catálogo",
     "title": "Línea de",
     "title_highlight": "Productos",
+    "light_line": "Línea Ligera",
+    "heavy_line": "Línea Pesada",
     "boxtruss_name": "Box Truss",
     "boxtruss_desc": "Líneas Q-15, Q-30 y Q-50. Ligereza y resistencia para cualquier escala de evento.",
     "praticaveis_name": "Plataformas",
-    "praticaveis_desc": "Escenarios y pisos elevados con resistencia estructural y montaje ágil.",
+    "praticaveis_desc": "Plataformas de aluminio para superficies elevadas, con resistencia estructural.",
     "bases_name": "Bases & Cubos",
     "bases_desc": "Fundación sólida para todas las configuraciones de estructura.",
     "acessorios_name": "Accesorios",
     "acessorios_desc": "Sleeves, bisagras, vallas y conectores de alta precisión.",
-    "see_line": "Ver línea"
+    "see_line": "Ver línea",
+    "filter_label": "Filtrar productos",
+    "all": "Todos",
+    "view_product": "Ver producto",
+    "view_all": "Ver todos los productos",
+    "empty": "Conoce todas las soluciones del catálogo."
   },
   "about": {
     "label": "Por qué Selum",
@@ -56,8 +86,41 @@
     "whatsapp": "WhatsApp",
     "quote": "Solicitar Presupuesto"
   },
+  "productDetail": {
+    "home": "Inicio",
+    "products": "Productos",
+    "categories": {
+      "estrutural": "Línea Estructural",
+      "acessorios": "Línea de Accesorios",
+      "acesso": "Línea de Acceso"
+    },
+    "quote": "Solicitar presupuesto",
+    "specialist": "Hablar con un especialista",
+    "galleryLabel": "Galería de",
+    "previousImage": "Imagen anterior",
+    "nextImage": "Siguiente imagen",
+    "showImage": "Mostrar imagen",
+    "breadcrumbLabel": "Ruta de navegación",
+    "benefitsLabel": "Beneficios",
+    "informationLabel": "Información del producto",
+    "specsTitle": "Especificaciones técnicas",
+    "modelsTitle": "Modelos disponibles",
+    "applicationLabel": "Aplicación",
+    "applicationCta": "Ver proyectos",
+    "constructionLabel": "Detalles constructivos",
+    "technicalLabel": "Plano técnico",
+    "technicalTitle": "Dimensiones y estructura",
+    "downloadTechnical": "Descargar ficha técnica",
+    "relatedLabel": "Productos relacionados",
+    "relatedTitle": "Conozca también"
+  },
   "footer": {
     "address": "Rua Tuiuti, 5.300 · Aventureiro · Joinville · SC",
     "rights": "Todos los derechos reservados."
+  },
+  "workWithUs": {
+    "title": "Forma parte de nuestro equipo",
+    "subtitle": "Vacantes abiertas · Joinville, SC · Crece con nosotros",
+    "button": "Envía tu currículum"
   }
 }

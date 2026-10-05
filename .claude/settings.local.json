@@ -9,7 +9,30 @@
       "Bash(dir:*)",
       "Bash(taskkill /F /IM node.exe)",
       "Bash(rd /s /q .next)",
-      "Bash(cd:*)"
+      "Bash(cd:*)",
+      "Bash(cmd.exe /c \"taskkill /F /IM node.exe & rd /s /q .next\")",
+      "Bash(powershell -command \"Get-Item public\\\\videos\\\\hero.mp4 | Select-Object Name, Length\")",
+      "Bash(powershell -command \"Get-Item public\\\\videos\\\\hero.mp4 | Select-Object Name, @{Name=''SizeMB'';Expression={[math]::Round\\($_Length/1MB,2\\)}}\")",
+      "Bash(cmd /c \"taskkill /F /IM node.exe\")",
+      "Bash(find /c/Users/Germano/Documents/PROGRAMACAO/Selum/selum-v2/src -name *supabase* -o -name *client* -o -name *db*)",
+      "Bash(npx tsc:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(taskkill /PID 20184 /F)",
+      "Bash(cmd.exe /c \"taskkill /PID 20184 /F\")",
+      "Bash(powershell -Command \"Stop-Process -Id 20184 -Force\"4)",
+      "Bash(powershell -Command \"Get-NetTCPConnection -LocalPort 3000 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess | ForEach-Object { Stop-Process -Id $_-Force -ErrorAction SilentlyContinue }\")",
+      "Bash(powershell -Command \"Stop-Process -Id 24192 -Force\")",
+      "Bash(powershell -Command \"Stop-Process -Id \\(Get-NetTCPConnection -LocalPort 3000\\).OwningProcess -Force -ErrorAction SilentlyContinue\")",
+      "Bash(powershell -Command \"Stop-Process -Name node -Force -ErrorAction SilentlyContinue\")",
+      "Bash(taskkill /PID 14364 /F)",
+      "Bash(cmd /c \"taskkill /PID 14364 /F\")",
+      "Bash(cmd /c \"taskkill /PID 14364 /F & timeout /t 2 /nobreak & npm run dev\")",
+      "Bash(powershell -Command \"Stop-Process -Id 14364 -Force -ErrorAction SilentlyContinue; Start-Sleep 2; Set-Location 'C:\\\\Users\\\\Germano\\\\Documents\\\\PROGRAMACAO\\\\Selum\\\\selum-v2'; npm run dev\")",
+      "Bash(powershell -Command \"Remove-Item -Recurse -Force '.next' -ErrorAction SilentlyContinue; npm run dev\")",
+      "Bash(powershell -Command \"Stop-Process -Id 24140 -Force -ErrorAction SilentlyContinue; Start-Sleep 2; npm run dev\")",
+      "Bash(powershell -Command \"Stop-Process -Id 23612 -Force -ErrorAction SilentlyContinue; Stop-Process -Id 24140 -Force -ErrorAction SilentlyContinue; Get-Process node -ErrorAction SilentlyContinue | Stop-Process -Force; Start-Sleep 2; npm run dev\")"
     ]
   }
 }

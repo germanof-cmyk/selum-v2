@@ -42,10 +42,10 @@ export default function Navbar() {
   }
 
   const links = [
-    { href: "#products", label: t("products"), icon: <Package size={14} /> },
-    { href: "#projects", label: t("projects"), icon: <LayoutGrid size={14} /> },
-    { href: "#about",    label: t("about"),    icon: <Building2 size={14} /> },
-    { href: "#contact",  label: t("contact"),  icon: <Mail size={14} /> },
+    { href: `/${locale}/produtos`, label: t("products"), icon: <Package size={14} /> },
+    { href: `/${locale}/projetos`, label: t("projects"), icon: <LayoutGrid size={14} /> },
+    { href: `/${locale}#about`,    label: t("about"),    icon: <Building2 size={14} /> },
+    { href: `/${locale}#contact`,  label: t("contact"),  icon: <Mail size={14} /> },
   ];
 
   const navBg = "linear-gradient(135deg, #E8EDF2 0%, #F0F4F8 50%, #E8EDF2 100%)";
@@ -82,7 +82,7 @@ export default function Navbar() {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.8 }}
                 transition={{ duration: 0.3 }}
-                onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+                onClick={() => { if (window.location.pathname === `/${locale}`) { window.scrollTo({ top: 0, behavior: "smooth" }); } else { window.location.href = `/${locale}`; } }}
                 style={{
                   position: "absolute",
                   left: 16, top: -20,
@@ -111,7 +111,7 @@ export default function Navbar() {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -16 }}
                 transition={{ duration: 0.3 }}
-                onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+                onClick={() => { if (window.location.pathname === `/${locale}`) { window.scrollTo({ top: 0, behavior: "smooth" }); } else { window.location.href = `/${locale}`; } }}
                 style={{ cursor: "pointer" }}
               >
                 <Image
@@ -128,7 +128,7 @@ export default function Navbar() {
 
         {/* Mobile logo */}
         {isMobile && (
-          <div onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} style={{ cursor: "pointer" }}>
+          <div onClick={() => { if (window.location.pathname === `/${locale}`) { window.scrollTo({ top: 0, behavior: "smooth" }); } else { window.location.href = `/${locale}`; } }} style={{ cursor: "pointer" }}>
             <Image
               src="/images/selum-logo-full.png"
               alt="Selum"
@@ -214,7 +214,7 @@ export default function Navbar() {
 
           {!isMobile && (
             <a
-              href="#contact"
+              href={`/${locale}#contact`}
               style={{ display: "flex", alignItems: "center", gap: 7, padding: "10px 22px", background: "#1565C0", color: "#fff", fontSize: 10, fontWeight: 700, letterSpacing: "2px", textTransform: "uppercase", textDecoration: "none", transition: "background 0.2s", whiteSpace: "nowrap", fontFamily: "var(--font-orbitron), sans-serif" }}
               onMouseEnter={e => (e.currentTarget.style.background = "#2196F3")}
               onMouseLeave={e => (e.currentTarget.style.background = "#1565C0")}
@@ -268,7 +268,7 @@ export default function Navbar() {
                 ))}
               </div>
               <a
-                href="#contact"
+                href={`/${locale}#contact`}
                 onClick={() => setOpen(false)}
                 style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, marginTop: 12, padding: "14px 24px", background: "#1565C0", color: "#fff", fontSize: 11, fontWeight: 700, letterSpacing: "2px", textTransform: "uppercase", textDecoration: "none", fontFamily: "var(--font-orbitron), sans-serif" }}
               >
