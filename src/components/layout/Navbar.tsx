@@ -20,10 +20,14 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(true);
 
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    const checkMobile = () => {
+      const mobile = window.innerWidth < 1150;
+      setIsMobile(mobile);
+      if (!mobile) setOpen(false);
+    };
     checkMobile();
     window.addEventListener("resize", checkMobile);
     const handleScroll = () => setScrolled(window.scrollY > 80);
@@ -39,6 +43,7 @@ export default function Navbar() {
     segments[1] = code;
     router.push(segments.join("/"));
     setLangOpen(false);
+    setOpen(false);
   }
 
   const links = [
@@ -227,7 +232,11 @@ export default function Navbar() {
           {isMobile && (
             <button
               onClick={() => setOpen(!open)}
-              style={{ background: "none", border: "1px solid rgba(21,101,192,0.3)", cursor: "pointer", color: "#1565C0", padding: 8, display: "flex", alignItems: "center", justifyContent: "center" }}
+              type="button"
+              aria-label={open ? "Fechar menu" : "Abrir menu"}
+              aria-expanded={open}
+              aria-controls="mobile-navigation"
+              style={{ background: "none", border: "1px solid rgba(21,101,192,0.3)", cursor: "pointer", color: "#1565C0", width: 44, height: 44, display: "flex", alignItems: "center", justifyContent: "center" }}
             >
               {open ? <X size={20} /> : <Menu size={20} />}
             </button>
@@ -239,10 +248,11 @@ export default function Navbar() {
       <AnimatePresence>
         {open && isMobile && (
           <motion.div
+            id="mobile-navigation"
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            style={{ overflow: "hidden", background: "#F0F4F8", borderTop: "1px solid rgba(21,101,192,0.15)" }}
+            style={{ overflowX: "hidden", overflowY: "auto", maxHeight: "calc(100dvh - 66px)", background: "#F0F4F8", borderTop: "1px solid rgba(21,101,192,0.15)" }}
           >
             <div style={{ padding: "20px 24px", display: "flex", flexDirection: "column", gap: 0 }}>
               {links.map((l) => (
@@ -261,7 +271,7 @@ export default function Navbar() {
                   <button
                     key={l.code}
                     onClick={() => switchLocale(l.code)}
-                    style={{ fontSize: 10, letterSpacing: "1.5px", textTransform: "uppercase", padding: "8px 14px", background: "none", cursor: "pointer", border: l.code === locale ? "1px solid #1565C0" : "1px solid rgba(21,101,192,0.2)", color: l.code === locale ? "#1565C0" : "rgba(10,30,60,0.5)", fontFamily: "var(--font-space), sans-serif" }}
+                    style={{ fontSize: 10, letterSpacing: "1.5px", textTransform: "uppercase", minHeight: 44, padding: "8px 14px", background: "none", cursor: "pointer", border: l.code === locale ? "1px solid #1565C0" : "1px solid rgba(21,101,192,0.2)", color: l.code === locale ? "#1565C0" : "rgba(10,30,60,0.5)", fontFamily: "var(--font-space), sans-serif" }}
                   >
                     {l.flag} {l.label}
                   </button>

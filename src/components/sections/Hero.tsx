@@ -1,5 +1,4 @@
 "use client";
-import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 
@@ -203,35 +202,52 @@ export default function Hero() {
         @media (max-width: 768px) {
           .hero-section {
             overflow: hidden;
+            min-height: 0;
           }
-        }
-        @media (max-width: 768px) {
-          .hero-content { padding: 100px 24px 350px; max-width: 100%; }
+          .hero-content { padding: 112px 20px 36px; max-width: 100%; }
+          .hero-desktop-break { display: none; }
           .hero-logo img { height: 130px; }
           .hero-btns { flex-direction: column; gap: 10px; }
           .btn-primary, .btn-outline, .btn-wpp {
+            display: flex;
+            align-items: center;
+            min-height: 48px;
             text-align: center;
             justify-content: center;
             width: 100%;
             padding: 14px 20px;
           }
           .hero-bar {
-            bottom: 16px;
-            width: 94%;
+            position: relative;
+            bottom: auto;
+            left: auto;
+            right: auto;
+            width: calc(100% - 40px);
+            margin: 0 20px 24px;
             border-radius: 12px;
             overflow: hidden;
             flex-wrap: wrap;
           }
           .bar-col {
-            flex: 1 1 48%;
+            flex: 0 0 50%;
+            min-width: 0;
             border-right: none;
             border-bottom: 1px solid rgba(255,255,255,0.07);
-            padding: 14px 16px;
+            padding: 14px 12px;
           }
+          .bar-col > div:first-child { align-items: flex-start !important; gap: 8px !important; }
+          .bar-num { font-size: clamp(16px, 5vw, 24px); }
+          .bar-unit { font-size: 11px; }
           .bar-col:nth-child(odd) { border-right: 1px solid rgba(255,255,255,0.07); }
           .bar-col:nth-last-child(-n+2) { border-bottom: none; }
           .bar-title { font-size: 20px; }
           .bar-desc { font-size: 9px; }
+        }
+        @media (max-width: 370px) {
+          .hero-content { padding-inline: 16px; }
+          .hero-bar { width: calc(100% - 32px); margin-inline: 16px; }
+          .bar-icon { display: none; }
+          .bar-col { padding-inline: 9px; }
         }
       `}</style>
 
@@ -272,7 +288,7 @@ export default function Hero() {
               marginBottom: 12,
               letterSpacing: "-0.3px",
             }}>
-              Soluções em estruturas para os<br />
+              Soluções em estruturas para os<br className="hero-desktop-break" />
               <span style={{
                 color: "transparent",
                 backgroundImage: "linear-gradient(90deg, #2196F3, #00B4D8)",

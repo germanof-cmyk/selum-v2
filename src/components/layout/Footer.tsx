@@ -90,8 +90,13 @@ export default function Footer() {
           .footer-bottom { padding: 18px 40px; }
         }
         @media (max-width: 640px) {
-          .footer-top { grid-template-columns: 1fr; padding: 32px 24px; }
-          .footer-bottom { padding: 16px 24px; flex-direction: column; align-items: flex-start; }
+          .footer-top { grid-template-columns: 1fr; gap: 28px; padding: 32px 20px; }
+          .ft-desc { max-width: 320px; }
+          .ft-social-btn { width: 44px; height: 44px; }
+          .ft-links { gap: 0; }
+          .ft-link { min-height: 40px; }
+          .footer-bottom { padding: 20px; flex-direction: column; align-items: flex-start; }
+          .ft-bottom-links { flex-wrap: wrap; row-gap: 12px; }
         }
       `}</style>
 

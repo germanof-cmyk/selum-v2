@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { useLocale } from "next-intl";
 import { MessageCircle, Mail } from "lucide-react";
@@ -46,6 +47,8 @@ export default function ProductsCatalogClient({ products }: { products: CatalogP
         .prods-hero::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,transparent,#1565C0 25%,#00B4D8 50%,#1565C0 75%,transparent); z-index:2; }
         .prods-hero-grid { position:absolute; inset:0; background-image:linear-gradient(rgba(33,150,243,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(33,150,243,0.03) 1px,transparent 1px); background-size:48px 48px; }
         .prods-hero-glow { position:absolute; left:30%; top:50%; transform:translate(-50%,-50%); width:600px; height:400px; background:radial-gradient(ellipse,rgba(21,101,192,0.15) 0%,transparent 70%); pointer-events:none; }
+        .prods-hero-product { position:absolute; right:8%; top:50%; transform:translateY(-55%); z-index:1; pointer-events:none; }
+        .prods-hero-product img { width:320px; height:320px; object-fit:contain; }
 
         /* Floating products */
         .floating-prod {
@@ -140,15 +143,23 @@ export default function ProductsCatalogClient({ products }: { products: CatalogP
           .prods-cta { padding:32px; }
         }
         @media (max-width:640px) {
+          .prods-page { padding-top:66px; }
           .prods-hero { height:280px; }
+          .prods-hero-product { right:-105px; opacity:.34; }
+          .prods-hero-product img { width:280px; height:280px; }
           .prods-hero-content { padding:0 20px; }
-          .prods-title { font-size:36px; }
+          .prods-title { font-size:clamp(29px,8vw,36px); overflow-wrap:anywhere; }
           .prods-grid { padding:20px; grid-template-columns:1fr; }
           .prod-card.featured { grid-column:auto; }
-          .filter-bar { padding:14px 20px; overflow-x:auto; flex-wrap:nowrap; }
+          .prod-card.featured .prod-img-wrap { height:240px; }
+          .prod-card.featured .prod-name { font-size:24px; }
+          .filter-bar { top:66px; padding:10px 20px; overflow-x:auto; flex-wrap:nowrap; scrollbar-width:none; }
+          .filter-bar::-webkit-scrollbar { display:none; }
+          .filter-btn { flex:0 0 auto; min-height:44px; }
           .prods-deco { display:none; }
-          .prods-cta { padding:24px 20px; flex-direction:column; }
+          .prods-cta { padding:28px 20px; flex-direction:column; align-items:stretch; }
           .cta-btns { width:100%; flex-direction:column; }
+          .btn-wpp, .btn-orc { min-height:48px; justify-content:center; }
         }
       `}</style>
 
@@ -163,24 +174,12 @@ export default function ProductsCatalogClient({ products }: { products: CatalogP
           {/* deco removido */}
 
           {/* Produto carrossel hero */}
-          {heroProducts.length > 0 && <div
-            style={{
-              position: "absolute",
-              right: "8%",
-              top: "50%",
-              transform: "translateY(-55%)",
-              zIndex: 1,
-              pointerEvents: "none",
-            }}
-          >
+          {heroProducts.length > 0 && <div className="prods-hero-product">
             <motion.img
               key={heroIndex}
               src={heroProducts[heroIndex % heroProducts.length].catalog?.heroImage || ""}
               alt={heroProducts[heroIndex % heroProducts.length].page.text[locale as "pt" | "es" | "en"].name}
               style={{
-                width: 320,
-                height: 320,
-                objectFit: "contain",
                 filter: "drop-shadow(0 0 60px rgba(33,150,243,0.35)) drop-shadow(0 24px 48px rgba(0,0,0,0.6)) brightness(0.9)",
                 transform: "perspective(1000px) rotateY(-8deg) rotateX(3deg)",
               }}
@@ -207,25 +206,31 @@ export default function ProductsCatalogClient({ products }: { products: CatalogP
           {/* Dots indicadores */}
           <div style={{
             position: "absolute",
-            bottom: 24,
+            bottom: 10,
             right: "5%",
             display: "flex",
-            gap: 6,
+            gap: 2,
             zIndex: 2,
           }}>
             {heroProducts.map((_, i) => (
-              <div
+              <button
                 key={i}
+                type="button"
+                aria-label={`Mostrar produto ${i + 1}`}
+                aria-current={i === heroIndex ? "true" : undefined}
                 onClick={() => setHeroIndex(i)}
                 style={{
-                  width: i === heroIndex ? 20 : 6,
-                  height: 6,
-                  borderRadius: 3,
-                  background: i === heroIndex ? "#2196F3" : "rgba(255,255,255,0.2)",
-                  transition: "all 0.3s",
+                  width: 36,
+                  height: 44,
+                  display: "grid",
+                  placeItems: "center",
+                  border: 0,
+                  background: "transparent",
                   cursor: "pointer",
                 }}
-              />
+              >
+                <span style={{ width: i === heroIndex ? 20 : 8, height: 6, borderRadius: 3, background: i === heroIndex ? "#2196F3" : "rgba(255,255,255,0.4)", transition: "all 0.3s" }} />
+              </button>
             ))}
           </div>
 
@@ -271,7 +276,7 @@ export default function ProductsCatalogClient({ products }: { products: CatalogP
               <div className="prod-glow" />
               <div className="prod-num">{String(listingProducts.indexOf(p) + 1).padStart(2, "0")}</div>
               <div className="prod-img-wrap">
-                {(p.catalog?.cardImage || p.page.gallery[0]) && <img className="prod-img" src={p.catalog?.cardImage || p.page.gallery[0]} alt={p.page.text[locale as "pt" | "es" | "en"].name} />}
+                {(p.catalog?.cardImage || p.page.gallery[0]) && <Image className="prod-img" src={p.catalog?.cardImage || p.page.gallery[0]} alt={p.page.text[locale as "pt" | "es" | "en"].name} fill sizes={p.catalog?.featured && activeFilter === "todos" ? "(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 66vw" : "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"} />}
                 <div className="prod-img-overlay" />
                 <div className="prod-specs">
                   {p.cardSpecs.map(s => (

@@ -249,12 +249,19 @@ export default function About() {
         }
         @media (max-width: 640px) {
           .about-hdr { padding: 48px 20px 28px; }
-          .about-img-card { margin: 0 20px; height: 240px; }
-          .about-img-content { left: 24px; bottom: 24px; }
-          .about-img-title { font-size: 22px; }
+          .about-img-card { display: flex; align-items: flex-end; margin: 0 20px; min-height: 300px; height: auto; }
+          .about-img-overlay { background: linear-gradient(0deg, rgba(4,12,24,.96), rgba(4,12,24,.64) 65%, rgba(4,12,24,.25)); }
+          .about-img-content { position: relative; left: auto; bottom: auto; width: 100%; padding: 32px 20px 22px; }
+          .about-img-title { font-size: clamp(20px, 6vw, 24px); overflow-wrap: anywhere; }
+          .about-img-desc { margin-bottom: 16px; }
+          .about-img-link { min-height: 44px; align-items: center; }
           .about-features { grid-template-columns: 1fr; margin: 2px 20px 0; }
           .about-stats { flex-wrap: wrap; margin: 2px 20px 0; }
-          .about-stat { flex: 1 1 48%; }
+          .about-stat { flex: 0 0 50%; min-width: 0; padding: 20px 14px; }
+          .about-stat:nth-child(2) { border-right: 0; }
+          .about-stat:nth-child(-n+2) { border-bottom: 1px solid rgba(33,150,243,0.08); }
+          .about-stat-num { font-size: clamp(23px, 7vw, 34px); }
+          .about-stat-num em { font-size: 13px; }
           .about-ttl { font-size: 26px; }
           .about-rings { display: none; }
         }
