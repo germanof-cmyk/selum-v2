@@ -1,0 +1,18 @@
+{
+  "projects": [
+    { "id": "project-show", "slug": "show", "name": { "pt": "Show", "es": "Show", "en": "Show" }, "active": true, "order": 1 },
+    { "id": "project-feira", "slug": "feira", "name": { "pt": "Feira", "es": "Feria", "en": "Fair" }, "active": true, "order": 2 },
+    { "id": "project-evento-corporativo", "slug": "evento-corporativo", "name": { "pt": "Evento corporativo", "es": "Evento corporativo", "en": "Corporate event" }, "active": true, "order": 3 },
+    { "id": "project-evento-esportivo", "slug": "evento-esportivo", "name": { "pt": "Evento esportivo", "es": "Evento deportivo", "en": "Sporting event" }, "active": true, "order": 4 },
+    { "id": "project-festa-municipal", "slug": "festa-evento-municipal", "name": { "pt": "Festa / evento municipal", "es": "Fiesta / evento municipal", "en": "Municipal festival / event" }, "active": true, "order": 5 },
+    { "id": "project-outro", "slug": "outro", "name": { "pt": "Outro", "es": "Otro", "en": "Other" }, "active": true, "order": 6 },
+    { "id": "project-show-nacional", "slug": "show-nacional", "name": { "pt": "Show Nacional", "es": "Espectáculo nacional", "en": "National Show" }, "active": true, "order": 7 },
+    { "id": "project-festa-nacional", "slug": "festa-nacional", "name": { "pt": "Festa Nacional", "es": "Fiesta Nacional", "en": "National Festival" }, "active": true, "order": 8 },
+    { "id": "project-show-guaratuba", "slug": "show-guaratuba-pr", "name": { "pt": "Show — Guaratuba · PR", "es": "Show — Guaratuba · PR", "en": "Show — Guaratuba · PR" }, "active": true, "order": 9 }
+  ],
+  "products": [
+    { "id": "product-estrutural", "slug": "estrutural", "name": { "pt": "Estruturas", "es": "Estructuras", "en": "Structures" }, "active": true, "order": 1 },
+    { "id": "product-acessorios", "slug": "acessorios", "name": { "pt": "Acessórios", "es": "Accesorios", "en": "Accessories" }, "active": true, "order": 2 },
+    { "id": "product-acesso", "slug": "acesso", "name": { "pt": "Acesso", "es": "Acceso", "en": "Access" }, "active": true, "order": 3 }
+  ]
+}

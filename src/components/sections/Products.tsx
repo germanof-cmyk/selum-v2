@@ -9,11 +9,8 @@ import type { HomeProduct } from "@/lib/home-products";
 import type { ProductPageLocale } from "@/lib/product-page-data";
 import styles from "./Products.module.css";
 
-const knownCategories = ["estrutural", "acessorios", "acesso"];
-
 export default function Products({ products }: { products: HomeProduct[] }) {
   const t = useTranslations("products");
-  const categoryT = useTranslations("productDetail.categories");
   const locale = useLocale() as ProductPageLocale;
   const [filter, setFilter] = useState("all");
   const categories = Array.from(new Set(products.map((product) => product.category).filter(Boolean)));
@@ -21,9 +18,8 @@ export default function Products({ products }: { products: HomeProduct[] }) {
   const countStyle = { "--card-count": Math.max(1, visible.length) } as CSSProperties;
 
   function categoryName(category: string) {
-    return knownCategories.includes(category)
-      ? categoryT(category as "estrutural" | "acessorios" | "acesso")
-      : category;
+    const names = products.find((product) => product.category === category)?.categoryNames;
+    return names?.[locale] || names?.pt || category;
   }
 
   return (

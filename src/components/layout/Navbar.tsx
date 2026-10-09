@@ -49,8 +49,8 @@ export default function Navbar() {
   const links = [
     { href: `/${locale}/produtos`, label: t("products"), icon: <Package size={14} /> },
     { href: `/${locale}/projetos`, label: t("projects"), icon: <LayoutGrid size={14} /> },
-    { href: `/${locale}#about`,    label: t("about"),    icon: <Building2 size={14} /> },
-    { href: `/${locale}#contact`,  label: t("contact"),  icon: <Mail size={14} /> },
+    { href: `/${locale}/quem-somos`, label: t("about"), icon: <Building2 size={14} /> },
+    { href: `/${locale}/contato`,  label: t("contact"),  icon: <Mail size={14} /> },
   ];
 
   const navBg = "linear-gradient(135deg, #E8EDF2 0%, #F0F4F8 50%, #E8EDF2 100%)";

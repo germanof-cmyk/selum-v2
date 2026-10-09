@@ -6,5 +6,5 @@ export default createMiddleware({
 });
 
 export const config = {
-  matcher: ["/((?!api|catalog-editor(?:/|$)|_next|_vercel|.*\\..*).*)"],
+  matcher: ["/((?!api|catalog-editor(?:/|$)|interno(?:/|$)|admin(?:/|$)|_next|_vercel|.*\\..*).*)"],
 };

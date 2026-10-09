@@ -2,23 +2,24 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { MessageCircle, Mail } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import type { CatalogProduct } from "@/lib/catalog";
+import { categoryName, type ContentCategory } from "@/lib/content-categories";
 
-const filters = [
-  { key: "todos", label: "Todos" },
-  { key: "estrutural", label: "Estrutural" },
-  { key: "acessorios", label: "Acessórios" },
-  { key: "acesso", label: "Acesso" },
-];
-
-export default function ProductsCatalogClient({ products }: { products: CatalogProduct[] }) {
+export default function ProductsCatalogClient({ products, categories }: { products: CatalogProduct[]; categories: ContentCategory[] }) {
   const heroProducts = products.filter(p => p.catalog?.heroFeatured && p.catalog.heroImage).sort((a, b) => (a.catalog?.heroOrder ?? Number.MAX_SAFE_INTEGER) - (b.catalog?.heroOrder ?? Number.MAX_SAFE_INTEGER));
   const listingProducts = products.filter(p => p.catalog?.visible).sort((a, b) => (a.catalog?.order ?? Number.MAX_SAFE_INTEGER) - (b.catalog?.order ?? Number.MAX_SAFE_INTEGER));
   const locale = useLocale();
+  const t = useTranslations("products");
+  const filters = [
+    { key: "todos", label: locale === "en" ? "All" : locale === "es" ? "Todos" : "Todos" },
+    ...categories.filter((category) => category.active && listingProducts.some((product) => product.category === category.slug))
+      .sort((a, b) => a.order - b.order)
+      .map((category) => ({ key: category.slug, label: categoryName(category, locale) })),
+  ];
   const [activeFilter, setActiveFilter] = useState("todos");
   const [heroIndex, setHeroIndex] = useState(0);
 
@@ -235,12 +236,12 @@ export default function ProductsCatalogClient({ products }: { products: CatalogP
           </div>
 
           <div className="prods-hero-content">
-            <div className="prods-eyebrow">Catálogo completo</div>
+            <div className="prods-eyebrow">{t("catalogEyebrow")}</div>
             <div className="prods-title">
-              Linha de<br /><span>Produtos</span>
+              {t("catalogTitle")}<br /><span>{t("catalogTitleHighlight")}</span>
             </div>
             <div className="prods-sub">
-              Estruturas de alumínio fabricadas com precisão industrial para eventos de qualquer escala na América Latina.
+              {t("catalogSubtitle")}
             </div>
           </div>
         </div>
@@ -299,8 +300,8 @@ export default function ProductsCatalogClient({ products }: { products: CatalogP
         {/* CTA */}
         <div className="prods-cta">
           <div>
-            <div className="cta-title">Não encontrou o que precisa? <span>Fale conosco.</span></div>
-            <div className="cta-sub">Fabricamos sob medida · Joinville, SC · Resposta em até 2h</div>
+            <div className="cta-title">{t("catalogCtaQuestion")} <span>{t("catalogCtaAction")}</span></div>
+            <div className="cta-sub">{t("catalogCtaSub")}</div>
           </div>
           <div className="cta-btns">
             <a href="https://api.whatsapp.com/send?phone=554734401445" target="_blank" rel="noopener noreferrer" className="btn-wpp">

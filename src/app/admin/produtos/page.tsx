@@ -1,5 +1,5 @@
-import UploadClient from "./UploadClient";
+import { redirect } from "next/navigation";
 
 export default function AdminProdutosPage() {
-  return <UploadClient />;
+  redirect("/interno");
 }

@@ -1,0 +1,26 @@
+.page { min-height: 100vh; padding: 28px clamp(16px, 4vw, 56px) 64px; background: #f4f6f8; color: #172437; font: 14px/1.45 Arial, Helvetica, sans-serif; }
+.header { display: grid; grid-template-columns: 1fr auto; gap: 18px 24px; align-items: center; max-width: 1180px; margin: 0 auto 22px; padding: 20px 24px; background: #fff; border: 1px solid #e0e6ed; border-radius: 6px; }
+.header > div { grid-column: 1; grid-row: 2; }
+.header h1 { margin: 5px 0; font-size: 24px; }
+.header p { margin: 0; color: #647589; font-size: 13px; }
+.eyebrow { color: #1461b5; font-size: 10px; font-weight: 800; letter-spacing: 1.5px; }
+.backButton, .saveButton, .actions button { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 36px; padding: 0 12px; border: 1px solid #cdd8e3; border-radius: 4px; background: #fff; color: #173552; font: 600 12px Arial, sans-serif; cursor: pointer; }
+.backButton { justify-self: start; }
+.saveButton { grid-column: 2; grid-row: 2; min-width: 140px; background: #0758b2; border-color: #0758b2; color: #fff; }
+.saveButton:disabled { opacity: .45; cursor: default; }
+.notice { max-width: 1180px; margin: 0 auto 16px; padding: 11px 14px; border: 1px solid #c9dfd4; border-radius: 4px; background: #f3faf6; color: #236446; font-size: 12px; }
+.fields { display: grid; gap: 14px; max-width: 1180px; margin: 0 auto; }
+.field { display: grid; grid-template-columns: minmax(150px, 260px) minmax(0, 1fr); gap: 18px; align-items: center; min-width: 0; padding: 16px; border: 1px solid #e0e6ed; border-radius: 6px; background: #fff; }
+.preview { position: relative; aspect-ratio: 16 / 10; overflow: hidden; border: 1px solid #d9e1e8; border-radius: 3px; background: #edf1f4; }
+.preview img { object-fit: cover; }
+.preview > span { display: grid; height: 100%; place-items: center; color: #8190a0; font-size: 12px; }
+.fieldBody { min-width: 0; }
+.fieldBody h2 { margin: 0 0 5px; font-size: 15px; }
+.fieldBody p { margin: 0 0 8px; color: #647589; font-size: 12px; }
+.path { display: block; overflow: hidden; margin-bottom: 12px; color: #728194; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+.actions { display: flex; flex-wrap: wrap; gap: 7px; }
+.actions button { min-height: 34px; padding: 0 10px; }
+.actions button:hover, .backButton:hover { border-color: #0c60b8; color: #0c60b8; }
+.actions .removeButton { color: #a53636; border-color: #e2c9c9; }
+.fileInput { display: none; }
+@media (max-width: 620px) { .header { grid-template-columns: 1fr; padding: 16px; } .header > div, .saveButton { grid-column: 1; grid-row: auto; } .saveButton { justify-self: start; } .field { grid-template-columns: 1fr; } .preview { max-height: 260px; } }

@@ -1,291 +1,176 @@
 "use client";
 
+import { useRef, useState } from "react";
 import Image from "next/image";
-import { ArrowDown, ArrowUp, ImagePlus, Plus, Trash2 } from "lucide-react";
-import type {
-  EditorBenefit,
-  EditorModel,
-  EditorModelGroup,
-  EditorProduct,
-  EditorSpecification,
-  LocalizedText,
-} from "@/lib/catalog-editor";
-import { emptyText, newId } from "@/lib/catalog-editor";
+import { ArrowLeft, ArrowRight, ChevronDown, GripVertical, ImagePlus, Plus, Trash2 } from "lucide-react";
+import { emptyText, newId, slugify, uniqueSlug, type EditorModel, type EditorModelGroup, type EditorProduct, type EditorSpecification, type LocalizedText } from "@/lib/catalog-editor";
+import type { ContentCategory } from "@/lib/content-categories";
 import styles from "./catalog-editor.module.css";
 
 export type AssetTarget = {
-  kind: "hero" | "home" | "catalogCard" | "catalogHero" | "modelIllustration" | "application" | "detail" | "model" | "drawing" | "file";
+  kind: "heroMain" | "hero" | "home" | "catalogCard" | "catalogHero" | "modelIllustration" | "application" | "detail" | "model" | "drawing" | "file";
   index?: number;
   groupIndex?: number;
 };
 
-function moveItem<T>(items: T[], index: number, offset: number) {
+const steps = ["Informações", "Fotos", "Modelos", "Especificações", "Exibição", "Revisão"];
+const specSuggestions = ["Material", "Dimensão", "Peso", "Acabamento", "Norma", "Carga", "Comprimento", "Largura", "Altura"];
+
+function moveItem<T>(items: T[], from: number, to: number) {
+  if (from === to || to < 0 || to >= items.length) return items;
   const next = [...items];
-  const target = index + offset;
-  if (target < 0 || target >= items.length) return next;
-  [next[index], next[target]] = [next[target], next[index]];
+  const [item] = next.splice(from, 1);
+  next.splice(to, 0, item);
   return next;
 }
 
-function SectionTitle({ title, onAdd, addLabel }: { title: string; onAdd?: () => void; addLabel?: string }) {
-  return (
-    <div className={styles.sectionTitle}>
-      <h2>{title}</h2>
-      {onAdd && <button type="button" className={styles.smallButton} onClick={onAdd}><Plus size={14} />{addLabel}</button>}
-    </div>
-  );
-}
-
-function LocalizedFields({
-  label,
-  value,
-  onChange,
-  multiline = false,
-}: {
-  label: string;
-  value: LocalizedText;
-  onChange: (value: LocalizedText) => void;
-  multiline?: boolean;
-}) {
-  return (
-    <div className={styles.localizedGroup}>
-      <span className={styles.fieldLegend}>{label}</span>
-      <div className={styles.languageGrid}>
-        {(["pt", "es", "en"] as const).map((locale) => (
-          <label className={styles.field} key={locale}>
-            <span>{locale.toUpperCase()}</span>
-            {multiline
-              ? <textarea rows={3} value={value[locale]} onChange={(event) => onChange({ ...value, [locale]: event.target.value })} />
-              : <input value={value[locale]} onChange={(event) => onChange({ ...value, [locale]: event.target.value })} />}
-          </label>
-        ))}
+function ImageChoice({ label, value, onPick, onRemove, hint }: { label: string; value: string; onPick: () => void; onRemove: () => void; hint?: string }) {
+  return <div className={styles.visualField}>
+    <div className={styles.visualFieldHeader}><strong>{label}</strong>{hint && <span>{hint}</span>}</div>
+    <div className={styles.visualPicker}>
+      <div className={styles.visualThumb}>{value ? value.toLowerCase().endsWith(".pdf") ? <span>PDF</span> : <Image src={value} alt="" fill sizes="180px" /> : <ImagePlus size={30} strokeWidth={1.4} />}</div>
+      <div className={styles.visualActions}>
+        <span>{value ? decodeURIComponent(value.split("/").pop() || "") : "Nenhuma imagem selecionada"}</span>
+        <button type="button" className={styles.smallButton} onClick={onPick}><ImagePlus size={15} />{value ? "Trocar imagem" : "Selecionar imagem"}</button>
+        {value && <button type="button" className={styles.textDanger} onClick={onRemove}>Remover</button>}
       </div>
     </div>
-  );
+  </div>;
 }
 
-function ImageField({
-  label,
-  value,
-  onChange,
-  onPick,
-}: {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  onPick: () => void;
-}) {
-  return (
-    <div className={styles.field}>
-      <span>{label}</span>
-      <div className={styles.pathControl}>
-        {value.startsWith("/") && <span className={styles.pathThumb}><Image src={value} alt="" fill sizes="38px" /></span>}
-        <input aria-label={label} value={value} onChange={(event) => onChange(event.target.value)} placeholder="/images/products/..." />
-        <button type="button" className={styles.smallButton} onClick={onPick}><ImagePlus size={14} />Escolher</button>
+function TranslatedText({ label, value, onChange, multiline = false }: { label: string; value: LocalizedText; onChange: (next: LocalizedText) => void; multiline?: boolean }) {
+  return <div className={styles.translationGroup}>
+    <label className={styles.field}><span>{label}</span>{multiline ? <textarea rows={3} value={value.pt} onChange={(event) => onChange({ ...value, pt: event.target.value })} /> : <input value={value.pt} onChange={(event) => onChange({ ...value, pt: event.target.value })} />}</label>
+    <details className={styles.translationDetails}><summary>Adicionar traduções <ChevronDown size={14} /></summary>
+      <div className={styles.fieldGrid}>
+        {(["en", "es"] as const).map((locale) => <label className={styles.field} key={locale}><span>{locale === "en" ? "Inglês" : "Espanhol"}</span>{multiline ? <textarea rows={3} value={value[locale]} onChange={(event) => onChange({ ...value, [locale]: event.target.value })} /> : <input value={value[locale]} onChange={(event) => onChange({ ...value, [locale]: event.target.value })} />}</label>)}
       </div>
-      {value && <small className={styles.assetPath}>{value.split("/").pop()} ? {value}</small>}
-    </div>
-  );
+    </details>
+  </div>;
 }
 
-function RowActions({ index, length, move, remove }: {
-  index: number;
-  length: number;
-  move: (offset: number) => void;
-  remove: () => void;
-}) {
-  return (
-    <div className={styles.rowActions}>
-      <button type="button" title="Subir" aria-label="Subir" disabled={index === 0} onClick={() => move(-1)}><ArrowUp size={14} /></button>
-      <button type="button" title="Descer" aria-label="Descer" disabled={index === length - 1} onClick={() => move(1)}><ArrowDown size={14} /></button>
-      <button type="button" title="Remover" aria-label="Remover" onClick={remove}><Trash2 size={14} /></button>
-    </div>
-  );
-}
-
-export default function ProductForm({
-  product,
-  products,
-  onChange,
-  onPickAsset,
-}: {
+export default function ProductForm({ product, products, categories, onChange, onPickAsset, onPublish, onPreview, onSaveDraft, onManageCategories, publishing, previewing }: {
   product: EditorProduct;
   products: EditorProduct[];
-  onChange: (product: EditorProduct) => void;
+  categories: ContentCategory[];
+  onChange: (next: EditorProduct) => void;
   onPickAsset: (target: AssetTarget) => void;
+  onPublish: (product: EditorProduct) => void;
+  onPreview: () => void;
+  onSaveDraft: () => void;
+  onManageCategories: () => void;
+  publishing: boolean;
+  previewing: boolean;
 }) {
-  function changeGroup(index: number, patch: Partial<EditorModelGroup>) {
+  const [step, setStep] = useState(0);
+  const categoryNames = Object.fromEntries(categories.map((category) => [category.slug, category.name.pt]));
+  const dragged = useRef<{ group: number; model?: number } | null>(null);
+  const modelCount = product.modelGroups.reduce((count, group) => count + group.models.length, 0);
+  const mainImage = product.heroImages[0] || "";
+  const issues = [
+    !product.name.pt.trim() ? "Falta o nome do produto." : "",
+    !categories.some((category) => category.slug === product.category && category.name.pt.trim()) ? "Escolha uma categoria." : "",
+    !mainImage ? "Falta uma imagem principal." : "",
+    !modelCount ? "Este produto ainda não possui modelos." : "",
+    !product.catalog.visible ? "Produto não está marcado para aparecer no catálogo." : "",
+  ].filter(Boolean);
+  const canPublish = Boolean(product.name.pt.trim() && mainImage && product.slug.trim() && categories.some((category) => category.slug === product.category && category.name.pt.trim()));
+
+  function updateName(value: LocalizedText) {
+    const used = products.filter((item) => item.id !== product.id).map((item) => item.slug);
+    const autoSlug = !product.name.pt || product.slug === slugify(product.name.pt) || product.slug.startsWith("novo-produto");
+    onChange({ ...product, name: value, slug: autoSlug ? uniqueSlug(value.pt, used, "novo-produto") : product.slug });
+  }
+  function updateMainImage(value: string) {
+    const images = [...product.heroImages];
+    if (images.length) images[0] = value;
+    else images.push(value);
+    onChange({ ...product, heroImages: images.filter(Boolean) });
+  }
+  function updateGroup(index: number, patch: Partial<EditorModelGroup>) {
     onChange({ ...product, modelGroups: product.modelGroups.map((group, position) => position === index ? { ...group, ...patch } : group) });
   }
-  function changeModel(groupIndex: number, index: number, patch: Partial<EditorModel>) {
+  function updateModel(groupIndex: number, index: number, patch: Partial<EditorModel>) {
     const group = product.modelGroups[groupIndex];
-    changeGroup(groupIndex, { models: group.models.map((model, position) => position === index ? { ...model, ...patch } : model) });
+    updateGroup(groupIndex, { models: group.models.map((model, position) => position === index ? { ...model, ...patch } : model) });
   }
-  function changeSpec(index: number, patch: Partial<EditorSpecification>) {
-    onChange({ ...product, specifications: product.specifications.map((spec, position) => position === index ? { ...spec, ...patch } : spec) });
+  function updateSpec(index: number, patch: Partial<EditorSpecification>) {
+    onChange({ ...product, specifications: product.specifications.map((item, position) => position === index ? { ...item, ...patch } : item) });
   }
-  function changeBenefit(index: number, patch: Partial<EditorBenefit>) {
-    onChange({ ...product, benefits: product.benefits.map((benefit, position) => position === index ? { ...benefit, ...patch } : benefit) });
+  function dropGroup(target: number) {
+    if (dragged.current?.model !== undefined || dragged.current === null) return;
+    onChange({ ...product, modelGroups: moveItem(product.modelGroups, dragged.current.group, target) });
+    dragged.current = null;
   }
-  function changeImageList(index: number, value: string) {
-    onChange({ ...product, images: { ...product.images, details: product.images.details.map((image, position) => position === index ? value : image) } });
+  function dropModel(groupIndex: number, target: number) {
+    if (dragged.current?.group !== groupIndex || dragged.current.model === undefined) return;
+    const group = product.modelGroups[groupIndex];
+    updateGroup(groupIndex, { models: moveItem(group.models, dragged.current.model, target) });
+    dragged.current = null;
   }
 
-  return (
-    <div className={styles.form}>
-      <section className={styles.section}>
-        <SectionTitle title="Informações do produto" />
-        <div className={styles.fieldGrid}>
-          <label className={styles.field}><span>Slug</span><input value={product.slug} placeholder="ex.: torre-box-truss" onChange={(event) => onChange({ ...product, slug: event.target.value.toLowerCase().replace(/\s+/g, "-") })} /></label>
-          <label className={styles.field}><span>Categoria</span><input list="selum-categories" value={product.category} onChange={(event) => onChange({ ...product, category: event.target.value })} /><datalist id="selum-categories"><option value="estrutural" /><option value="acessorios" /><option value="acesso" /></datalist></label>
-          <label className={styles.field}><span>Status</span><select value={product.status} onChange={(event) => onChange({ ...product, status: event.target.value as EditorProduct["status"] })}><option value="draft">Rascunho</option><option value="review">Revisar</option><option value="approved">Aprovado</option></select></label>
-          <label className={styles.field}><span>Ativo</span><select value={product.active ? "yes" : "no"} onChange={(event) => onChange({ ...product, active: event.target.value === "yes" })}><option value="yes">Sim</option><option value="no">Não</option></select></label>
-        </div>
-        <LocalizedFields label="Nome" value={product.name} onChange={(name) => onChange({ ...product, name })} />
-        <LocalizedFields label="Descrição" value={product.description} onChange={(description) => onChange({ ...product, description })} multiline />
-      </section>
+  return <div className={styles.wizard}>
+    <div className={styles.wizardHeading}><div><span className={styles.brand}>CADASTRO DE PRODUTO</span><h2>{product.name.pt || "Novo produto"}</h2></div><span className={styles.stepCount}>Etapa {step + 1} de 6</span></div>
+    <nav className={styles.stepBar} aria-label="Etapas do cadastro">{steps.map((label, index) => <button type="button" key={label} className={index === step ? styles.stepActive : index < step ? styles.stepDone : ""} onClick={() => setStep(index)}><span>{index + 1}</span>{label}</button>)}</nav>
 
-      <section className={styles.section}>
-        <SectionTitle title="Destaque na Home" />
-        <div className={styles.fieldGrid}>
-          <label className={styles.field}><span>Exibir este produto na Home</span><select value={product.home.featured ? "yes" : "no"} onChange={(event) => onChange({ ...product, home: { ...product.home, featured: event.target.value === "yes" } })}><option value="no">Não</option><option value="yes">Sim</option></select></label>
-          <label className={styles.field}><span>Ordem na Home</span><input type="number" min="1" step="1" value={product.home.order ?? ""} placeholder="1" onChange={(event) => onChange({ ...product, home: { ...product.home, order: event.target.value === "" ? null : Number(event.target.value) } })} /></label>
-        </div>
-        <div className={styles.homeImageField}>
-          <ImageField label="Imagem para Home" value={product.home.image} onChange={(image) => onChange({ ...product, home: { ...product.home, image } })} onPick={() => onPickAsset({ kind: "home" })} />
-          <p className={styles.emptyHint}>Sem imagem própria, será usada a primeira imagem de destaque.</p>
-        </div>
-        <div className={styles.homePreview}>
-          <span className={styles.fieldLegend}>Prévia do card</span>
-          <div className={styles.homePreviewCard}>
-            <div className={styles.homePreviewImage}>
-              {(product.home.image || product.heroImages[0]) && <Image src={product.home.image || product.heroImages[0]} alt="" fill sizes="180px" />}
-            </div>
-            <div><small>{product.category}</small><strong>{product.name.pt || product.slug || "Produto"}</strong><span>Ver produto →</span></div>
-          </div>
-        </div>
-      </section>
+    {step === 0 && <section className={styles.wizardPanel}>
+      <h3>Informações básicas</h3><p className={styles.stepIntro}>Comece pelo que o cliente verá. Português é o idioma principal.</p>
+      <TranslatedText label="Nome do produto" value={product.name} onChange={updateName} />
+      <div className={styles.fieldGrid}>
+        <div className={styles.categorySelectRow}><label className={styles.field}><span>Categoria</span><select value={product.category} onChange={(event) => onChange({ ...product, category: event.target.value })}>{!product.category && <option value="">Selecione uma categoria</option>}{categories.filter((category) => category.name.pt.trim() && (category.active || category.slug === product.category)).map((category) => <option key={category.id} value={category.slug}>{category.name.pt}{!category.active ? " (inativa)" : ""}</option>)}{product.category && !categoryNames[product.category] && <option value={product.category}>{product.category}</option>}</select></label><button type="button" className={styles.toolbarButton} onClick={onManageCategories}>Gerenciar</button></div>
+        <label className={styles.field}><span>Linha / família</span><input value={product.catalog.tag} placeholder="Ex.: Linha Leve" onChange={(event) => onChange({ ...product, catalog: { ...product.catalog, tag: event.target.value } })} /></label>
+      </div>
+      <TranslatedText label="Descrição curta" value={product.description} onChange={(description) => onChange({ ...product, description })} multiline />
+      <details className={styles.advanced}><summary>Opções avançadas <ChevronDown size={14} /></summary><div className={styles.fieldGrid}><label className={styles.field}><span>Identificador da página (slug)</span><input value={product.slug} onChange={(event) => onChange({ ...product, slug: slugify(event.target.value) })} /></label><label className={styles.field}><span>ID interno</span><input value={product.id} readOnly /></label></div></details>
+    </section>}
 
-      <section className={styles.section}>
-        <SectionTitle title="P?gina de Produtos" />
-        <div className={styles.fieldGrid}>
-          <label className={styles.field}><span>Exibir no cat?logo</span><select value={product.catalog.visible ? "yes" : "no"} onChange={(event) => onChange({ ...product, catalog: { ...product.catalog, visible: event.target.value === "yes" } })}><option value="no">N?o</option><option value="yes">Sim</option></select></label>
-          <label className={styles.field}><span>Ordem no cat?logo</span><input type="number" min="1" step="1" value={product.catalog.order ?? ""} onChange={(event) => onChange({ ...product, catalog: { ...product.catalog, order: event.target.value === "" ? null : Number(event.target.value) } })} /></label>
-        </div>
-        <div className={styles.homeImageField}><ImageField label="Imagem do card" value={product.catalog.cardImage} onChange={(cardImage) => onChange({ ...product, catalog: { ...product.catalog, cardImage } })} onPick={() => onPickAsset({ kind: "catalogCard" })} /><p className={styles.emptyHint}>Sem imagem própria, será usada a primeira imagem de destaque da página individual.</p></div>
-        <div className={styles.homePreview}><span className={styles.fieldLegend}>Pr?via do card</span><div className={styles.homePreviewCard}><div className={styles.homePreviewImage}>{(product.catalog.cardImage || product.heroImages[0]) && <Image src={product.catalog.cardImage || product.heroImages[0]} alt="" fill sizes="180px" />}</div><div><small>{product.category}</small><strong>{product.name.pt || product.slug || "Produto"}</strong><span>Ver produto ?</span></div></div></div>
-      </section>
+    {step === 1 && <section className={styles.wizardPanel}>
+      <h3>Fotos</h3><p className={styles.stepIntro}>Escolha as imagens na biblioteca. A foto principal abre a página do produto.</p>
+      <ImageChoice label="Foto principal" value={mainImage} onPick={() => onPickAsset({ kind: "heroMain" })} onRemove={() => updateMainImage("")} />
+      <div className={styles.inlineHeading}><h4>Outras fotos</h4><button type="button" className={styles.smallButton} onClick={() => onPickAsset({ kind: "hero" })}><Plus size={14} />Adicionar foto</button></div>
+      <div className={styles.miniGallery}>{product.heroImages.slice(1).map((image, index) => <div className={styles.miniImage} key={image + index}><Image src={image} alt="" fill sizes="130px" /><button type="button" aria-label={"Remover foto " + (index + 2)} onClick={() => onChange({ ...product, heroImages: product.heroImages.filter((_, position) => position !== index + 1) })}><Trash2 size={14} /></button></div>)}</div>
+      <div className={styles.imageChoices}>
+        <ImageChoice label="Imagem da página inicial" value={product.home.image} onPick={() => onPickAsset({ kind: "home" })} onRemove={() => onChange({ ...product, home: { ...product.home, image: "" } })} hint="Opcional: usa a foto principal se vazia" />
+        <ImageChoice label="Imagem do catálogo" value={product.catalog.cardImage} onPick={() => onPickAsset({ kind: "catalogCard" })} onRemove={() => onChange({ ...product, catalog: { ...product.catalog, cardImage: "" } })} hint="Opcional: usa a foto principal se vazia" />
+        <ImageChoice label="Imagem de destaque do catálogo" value={product.catalog.heroImage} onPick={() => onPickAsset({ kind: "catalogHero" })} onRemove={() => onChange({ ...product, catalog: { ...product.catalog, heroImage: "" } })} />
+        <ImageChoice label="Ilustração dos modelos" value={product.modelIllustration} onPick={() => onPickAsset({ kind: "modelIllustration" })} onRemove={() => onChange({ ...product, modelIllustration: "" })} />
+      </div>
+      <details className={styles.advanced}><summary>Fotos complementares <ChevronDown size={14} /></summary><p className={styles.stepIntro}>Imagens de detalhes técnicos e aplicação, se existirem.</p><div className={styles.inlineHeading}><h4>Detalhes construtivos</h4><button type="button" className={styles.smallButton} onClick={() => onPickAsset({ kind: "detail" })}><Plus size={14} />Adicionar</button></div><div className={styles.miniGallery}>{product.images.details.map((image, index) => <div className={styles.miniImage} key={image + index}><Image src={image} alt="" fill sizes="130px" /><button type="button" aria-label={"Remover detalhe " + (index + 1)} onClick={() => onChange({ ...product, images: { ...product.images, details: product.images.details.filter((_, position) => position !== index) } })}><Trash2 size={14} /></button></div>)}</div><ImageChoice label="Imagem de aplicação" value={product.application.image} onPick={() => onPickAsset({ kind: "application" })} onRemove={() => onChange({ ...product, application: { ...product.application, image: "" } })} /></details>
+    </section>}
 
-      <section className={styles.section}>
-        <SectionTitle title="Hero da P?gina de Produtos" />
-        <div className={styles.fieldGrid}>
-          <label className={styles.field}><span>Exibir no hero</span><select value={product.catalog.heroFeatured ? "yes" : "no"} onChange={(event) => onChange({ ...product, catalog: { ...product.catalog, heroFeatured: event.target.value === "yes" } })}><option value="no">N?o</option><option value="yes">Sim</option></select></label>
-          <label className={styles.field}><span>Ordem no hero</span><input type="number" min="1" step="1" value={product.catalog.heroOrder ?? ""} onChange={(event) => onChange({ ...product, catalog: { ...product.catalog, heroOrder: event.target.value === "" ? null : Number(event.target.value) } })} /></label>
-        </div>
-        <div className={styles.homeImageField}><ImageField label="Imagem do hero" value={product.catalog.heroImage} onChange={(heroImage) => onChange({ ...product, catalog: { ...product.catalog, heroImage } })} onPick={() => onPickAsset({ kind: "catalogHero" })} /><p className={styles.emptyHint}>O hero usa apenas esta imagem. Sem imagem, o produto não entra no carrossel.</p></div>
-        <div className={styles.homePreview}><span className={styles.fieldLegend}>Pr?via do hero</span><div className={styles.catalogHeroPreview}>{product.catalog.heroImage && <Image src={product.catalog.heroImage} alt="" fill sizes="320px" />}</div></div>
-      </section>
+    {step === 2 && <section className={styles.wizardPanel}>
+      <div className={styles.inlineHeading}><div><h3>Modelos disponíveis</h3><p className={styles.stepIntro}>Crie linhas e adicione os códigos dos modelos. Arraste pelo ícone para mudar a ordem.</p></div><button type="button" className={styles.smallButton} onClick={() => onChange({ ...product, modelGroups: [...product.modelGroups, { id: newId(), name: emptyText(), models: [] }] })}><Plus size={14} />Nova linha</button></div>
+      {product.modelGroups.length === 0 && <p className={styles.friendlyEmpty}>Nenhuma linha cadastrada. Clique em “Nova linha” para começar.</p>}
+      {product.modelGroups.map((group, groupIndex) => <div className={styles.modelLine} key={group.id} onDragOver={(event) => event.preventDefault()} onDrop={(event) => { event.preventDefault(); dropGroup(groupIndex); }}>
+        <div className={styles.modelLineHeader}><button type="button" className={styles.dragHandle} draggable aria-label="Arrastar linha" onDragStart={() => { dragged.current = { group: groupIndex }; }}><GripVertical size={18} /></button><input aria-label="Nome da linha" value={group.name.pt} placeholder={"Linha " + (groupIndex + 1)} onChange={(event) => updateGroup(groupIndex, { name: { ...group.name, pt: event.target.value } })} /><button type="button" className={styles.iconButton} aria-label="Subir linha" disabled={groupIndex === 0} onClick={() => onChange({ ...product, modelGroups: moveItem(product.modelGroups, groupIndex, groupIndex - 1) })}>↑</button><button type="button" className={styles.iconButton} aria-label="Descer linha" disabled={groupIndex === product.modelGroups.length - 1} onClick={() => onChange({ ...product, modelGroups: moveItem(product.modelGroups, groupIndex, groupIndex + 1) })}>↓</button><button type="button" className={styles.iconButton} aria-label="Excluir linha" onClick={() => onChange({ ...product, modelGroups: product.modelGroups.filter((_, position) => position !== groupIndex) })}><Trash2 size={15} /></button></div>
+        {group.models.map((model, index) => <div className={styles.modelRow} key={index} onDragOver={(event) => event.preventDefault()} onDrop={(event) => { event.preventDefault(); event.stopPropagation(); dropModel(groupIndex, index); }}><button type="button" className={styles.dragHandle} draggable aria-label="Arrastar modelo" onDragStart={(event) => { event.stopPropagation(); dragged.current = { group: groupIndex, model: index }; }}><GripVertical size={17} /></button><label className={styles.field}><span>Código</span><input value={model.code} placeholder="P30" onChange={(event) => updateModel(groupIndex, index, { code: event.target.value })} /></label><label className={styles.field}><span>Nome opcional</span><input value={model.name} onChange={(event) => updateModel(groupIndex, index, { name: event.target.value })} /></label><label className={styles.field}><span>Dimensão opcional</span><input value={model.dimensions} onChange={(event) => updateModel(groupIndex, index, { dimensions: event.target.value })} /></label><button type="button" className={styles.iconButton} aria-label="Subir modelo" disabled={index === 0} onClick={() => updateGroup(groupIndex, { models: moveItem(group.models, index, index - 1) })}>↑</button><button type="button" className={styles.iconButton} aria-label="Descer modelo" disabled={index === group.models.length - 1} onClick={() => updateGroup(groupIndex, { models: moveItem(group.models, index, index + 1) })}>↓</button><button type="button" className={styles.iconButton} aria-label="Excluir modelo" onClick={() => updateGroup(groupIndex, { models: group.models.filter((_, position) => position !== index) })}><Trash2 size={15} /></button></div>)}
+        <button type="button" className={styles.smallButton} onClick={() => updateGroup(groupIndex, { models: [...group.models, { code: "", name: "", dimensions: "", image: "", note: "" }] })}><Plus size={14} />Adicionar modelo</button>
+      </div>)}
+    </section>}
 
-      <section className={styles.section}>
-        <SectionTitle title="Modelos disponíveis" addLabel="Nova linha" onAdd={() => onChange({ ...product, modelGroups: [...product.modelGroups, { id: newId(), name: emptyText(), models: [] }] })} />
-        {product.modelGroups.length === 0 && <p className={styles.emptyHint}>Nenhuma linha ou modelo cadastrado.</p>}
-        {product.modelGroups.map((group, groupIndex) => (
-          <div className={styles.modelGroupEditor} key={group.id}>
-            <div className={styles.repeatHeader}>
-              <strong>{group.name.pt || `Linha ${groupIndex + 1}`}</strong>
-              <RowActions index={groupIndex} length={product.modelGroups.length} move={(offset) => onChange({ ...product, modelGroups: moveItem(product.modelGroups, groupIndex, offset) })} remove={() => onChange({ ...product, modelGroups: product.modelGroups.filter((_, position) => position !== groupIndex) })} />
-            </div>
-            <LocalizedFields label="Nome da linha (opcional)" value={group.name} onChange={(name) => changeGroup(groupIndex, { name })} />
-            <div className={styles.subsectionHeader}><h3>Modelos desta linha</h3><button type="button" className={styles.smallButton} onClick={() => changeGroup(groupIndex, { models: [...group.models, { code: "", name: "", dimensions: "", image: "", note: "" }] })}><Plus size={14} />Adicionar modelo</button></div>
-            {group.models.map((model, index) => (
-              <div className={styles.repeatRow} key={index}>
-                <div className={styles.repeatHeader}><strong>Modelo {index + 1}</strong><RowActions index={index} length={group.models.length} move={(offset) => changeGroup(groupIndex, { models: moveItem(group.models, index, offset) })} remove={() => changeGroup(groupIndex, { models: group.models.filter((_, position) => position !== index) })} /></div>
-                <div className={styles.fieldGrid}>
-                  <label className={styles.field}><span>Código</span><input value={model.code} onChange={(event) => changeModel(groupIndex, index, { code: event.target.value })} /></label>
-                  <label className={styles.field}><span>Nome (opcional)</span><input value={model.name} onChange={(event) => changeModel(groupIndex, index, { name: event.target.value })} /></label>
-                  <label className={styles.field}><span>Dimensão (opcional)</span><input value={model.dimensions} onChange={(event) => changeModel(groupIndex, index, { dimensions: event.target.value })} /></label>
-                  <label className={styles.field}><span>Observação (opcional)</span><input value={model.note} onChange={(event) => changeModel(groupIndex, index, { note: event.target.value })} /></label>
-                </div>
-                <ImageField label="Imagem própria do modelo (opcional)" value={model.image} onChange={(image) => changeModel(groupIndex, index, { image })} onPick={() => onPickAsset({ kind: "model", groupIndex, index })} />
-              </div>
-            ))}
-          </div>
-        ))}
-      </section>
+    {step === 3 && <section className={styles.wizardPanel}>
+      <div className={styles.inlineHeading}><div><h3>Informações técnicas</h3><p className={styles.stepIntro}>Adicione apenas os dados confirmados. Esta etapa é opcional.</p></div><button type="button" className={styles.smallButton} onClick={() => onChange({ ...product, specifications: [...product.specifications, { label: "", value: "", unit: "" }] })}><Plus size={14} />Adicionar informação</button></div>
+      <datalist id="spec-suggestions">{specSuggestions.map((value) => <option key={value} value={value} />)}</datalist>
+      {product.specifications.length === 0 && <p className={styles.friendlyEmpty}>Nenhuma informação técnica adicionada.</p>}
+      {product.specifications.map((spec, index) => <div className={styles.specRow} key={index}><label className={styles.field}><span>Campo</span><input list="spec-suggestions" value={spec.label} placeholder="Material" onChange={(event) => updateSpec(index, { label: event.target.value })} /></label><label className={styles.field}><span>Valor</span><input value={spec.value} placeholder="Alumínio" onChange={(event) => updateSpec(index, { value: event.target.value })} /></label><label className={styles.field}><span>Unidade opcional</span><input value={spec.unit} onChange={(event) => updateSpec(index, { unit: event.target.value })} /></label><button type="button" className={styles.iconButton} aria-label="Remover informação" onClick={() => onChange({ ...product, specifications: product.specifications.filter((_, position) => position !== index) })}><Trash2 size={16} /></button></div>)}
+      <details className={styles.advanced}><summary>Outros dados técnicos <ChevronDown size={14} /></summary><div className={styles.imageChoices}><ImageChoice label="Desenho técnico" value={product.technicalDrawing} onPick={() => onPickAsset({ kind: "drawing" })} onRemove={() => onChange({ ...product, technicalDrawing: "" })} /><ImageChoice label="Ficha técnica em PDF" value={product.technicalFile} onPick={() => onPickAsset({ kind: "file" })} onRemove={() => onChange({ ...product, technicalFile: "" })} /></div></details>
+    </section>}
 
-      <section className={styles.section}>
-        <SectionTitle title="Especificações" addLabel="Adicionar especificação" onAdd={() => onChange({ ...product, specifications: [...product.specifications, { label: "", value: "", unit: "" }] })} />
-        {product.specifications.length === 0 && <p className={styles.emptyHint}>Adicione apenas dados confirmados.</p>}
-        {product.specifications.map((spec, index) => (
-          <div className={styles.repeatRow} key={index}>
-            <div className={styles.repeatHeader}><strong>Especificação {index + 1}</strong><RowActions index={index} length={product.specifications.length} move={(offset) => onChange({ ...product, specifications: moveItem(product.specifications, index, offset) })} remove={() => onChange({ ...product, specifications: product.specifications.filter((_, position) => position !== index) })} /></div>
-            <div className={styles.specGrid}>
-              <label className={styles.field}><span>Label</span><input value={spec.label} onChange={(event) => changeSpec(index, { label: event.target.value })} /></label>
-              <label className={styles.field}><span>Valor</span><input value={spec.value} onChange={(event) => changeSpec(index, { value: event.target.value })} /></label>
-              <label className={styles.field}><span>Unidade</span><input value={spec.unit} onChange={(event) => changeSpec(index, { unit: event.target.value })} /></label>
-            </div>
-          </div>
-        ))}
-      </section>
+    {step === 4 && <section className={styles.wizardPanel}>
+      <h3>Onde aparece no site</h3><p className={styles.stepIntro}>Escolha os lugares em que este produto deve aparecer. A ordem é ajustada arrastando os produtos na lista à esquerda.</p>
+      <div className={styles.visibilityOptions}><label><input type="checkbox" checked={product.home.featured} onChange={(event) => onChange({ ...product, home: { ...product.home, featured: event.target.checked } })} /><span><strong>Mostrar na página inicial</strong><small>Uma seleção de produtos da Selum na Home.</small></span></label><label><input type="checkbox" checked={product.catalog.visible} onChange={(event) => onChange({ ...product, catalog: { ...product.catalog, visible: event.target.checked } })} /><span><strong>Mostrar na página Produtos</strong><small>O produto entra na listagem do catálogo.</small></span></label><label><input type="checkbox" checked={product.catalog.heroFeatured} onChange={(event) => onChange({ ...product, catalog: { ...product.catalog, heroFeatured: event.target.checked } })} /><span><strong>Mostrar no destaque principal da página Produtos</strong><small>Use uma imagem própria de destaque para este espaço.</small></span></label></div>
+      {product.catalog.heroFeatured && <ImageChoice label="Imagem de destaque do catálogo" value={product.catalog.heroImage} onPick={() => onPickAsset({ kind: "catalogHero" })} onRemove={() => onChange({ ...product, catalog: { ...product.catalog, heroImage: "" } })} />}
+      <div className={styles.previewStrip}><div className={styles.previewImage}>{(product.catalog.cardImage || mainImage) && <Image src={product.catalog.cardImage || mainImage} alt="" fill sizes="180px" />}</div><div><small>PRÉVIA NO SITE</small><strong>{product.name.pt || "Nome do produto"}</strong><span>{categoryNames[product.category] || product.category}</span></div></div>
+    </section>}
 
-      <section className={styles.section}>
-        <SectionTitle title="Benefícios" addLabel="Adicionar benefício" onAdd={() => onChange({ ...product, benefits: [...product.benefits, { text: { pt: "", es: "", en: "" }, icon: "" }] })} />
-        {product.benefits.map((benefit, index) => (
-          <div className={styles.repeatRow} key={index}>
-            <div className={styles.repeatHeader}><strong>Benefício {index + 1}</strong><RowActions index={index} length={product.benefits.length} move={(offset) => onChange({ ...product, benefits: moveItem(product.benefits, index, offset) })} remove={() => onChange({ ...product, benefits: product.benefits.filter((_, position) => position !== index) })} /></div>
-            <LocalizedFields label="Texto" value={benefit.text} onChange={(text) => changeBenefit(index, { text })} />
-            <label className={styles.field}><span>Ícone (opcional)</span><input list="benefit-icons" value={benefit.icon} onChange={(event) => changeBenefit(index, { icon: event.target.value })} /><datalist id="benefit-icons"><option value="Layers" /><option value="Lightbulb" /><option value="Box" /><option value="Factory" /></datalist></label>
-          </div>
-        ))}
-      </section>
+    {step === 5 && <section className={styles.wizardPanel}>
+      <h3>Revisar e publicar</h3><p className={styles.stepIntro}>Confira o resumo antes de disponibilizar o produto no site.</p>
+      <div className={styles.reviewSummary}><div className={styles.reviewImage}>{mainImage && <Image src={mainImage} alt="" fill sizes="220px" />}</div><div><h4>{product.name.pt || "Produto sem nome"}</h4><p>{categoryNames[product.category] || product.category}</p><p>{product.heroImages.length} foto(s) · {modelCount} modelo(s)</p><ul><li>{product.home.featured ? "✓ Página inicial" : "— Página inicial"}</li><li>{product.catalog.visible ? "✓ Catálogo" : "— Catálogo"}</li><li>{product.catalog.heroFeatured ? "✓ Destaque do catálogo" : "— Destaque do catálogo"}</li></ul></div></div>
+      {issues.length > 0 && <div className={styles.reviewIssues}><strong>Antes de publicar, confira:</strong><ul>{issues.map((issue) => <li key={issue}>{issue}</li>)}</ul></div>}
+      <div className={styles.reviewActions}><button type="button" className={styles.toolbarButton} onClick={onSaveDraft}>Salvar rascunho</button><button type="button" className={styles.toolbarButton} disabled={previewing} onClick={onPreview}>{previewing ? "Abrindo..." : "Visualizar página"}</button><button type="button" className={styles.publishButton} disabled={publishing || !canPublish} onClick={() => onPublish(product)}>{publishing ? "Publicando..." : "Publicar"}</button></div>
+      <details className={styles.advanced}><summary>Opções avançadas <ChevronDown size={14} /></summary><div className={styles.fieldGrid}><label className={styles.field}><span>Identificador da página (slug)</span><input value={product.slug} onChange={(event) => onChange({ ...product, slug: slugify(event.target.value) })} /></label><label className={styles.field}><span>ID interno</span><input value={product.id} readOnly /></label></div><p className={styles.stepIntro}>Caminhos dos arquivos são gerenciados pela biblioteca visual e preservados no cadastro.</p></details>
+    </section>}
 
-      <section className={styles.section}>
-        <SectionTitle title="P?gina Individual ? Imagens" />
-        <div className={styles.subsectionHeader}><h3>Imagens de destaque</h3><button type="button" className={styles.smallButton} onClick={() => onPickAsset({ kind: "hero" })}><ImagePlus size={14} />Adicionar imagem</button></div>
-        <p className={styles.emptyHint}>A primeira imagem será a principal do hero. Apenas estas imagens aparecem na galeria.</p>
-        {product.heroImages.map((image, index) => (
-          <div className={styles.imageRow} key={index}>
-            <span className={styles.imageRowThumb}>{image.startsWith("/") && <Image src={image} alt="" fill sizes="48px" />}</span>
-            <input aria-label={`Imagem de destaque ${index + 1}`} value={image} onChange={(event) => onChange({ ...product, heroImages: product.heroImages.map((item, position) => position === index ? event.target.value : item) })} />
-            <RowActions index={index} length={product.heroImages.length} move={(offset) => onChange({ ...product, heroImages: moveItem(product.heroImages, index, offset) })} remove={() => onChange({ ...product, heroImages: product.heroImages.filter((_, position) => position !== index) })} />
-          </div>
-        ))}
-        <div className={styles.subsectionHeader}><h3>Ilustração dos modelos</h3></div>
-        <ImageField label="Imagem compartilhada pelos modelos sem imagem própria" value={product.modelIllustration} onChange={(modelIllustration) => onChange({ ...product, modelIllustration })} onPick={() => onPickAsset({ kind: "modelIllustration" })} />
-        <div className={styles.subsectionHeader}><h3>Detalhes construtivos</h3><button type="button" className={styles.smallButton} onClick={() => onPickAsset({ kind: "detail" })}><ImagePlus size={14} />Adicionar imagem</button></div>
-        {product.images.details.map((image, index) => (
-          <div className={styles.imageRow} key={index}>
-            <span className={styles.imageRowThumb}>{image.startsWith("/") && <Image src={image} alt="" fill sizes="48px" />}</span>
-            <input aria-label={`Imagem ${index + 1} dos detalhes`} value={image} onChange={(event) => changeImageList(index, event.target.value)} />
-            <RowActions index={index} length={product.images.details.length} move={(offset) => onChange({ ...product, images: { ...product.images, details: moveItem(product.images.details, index, offset) } })} remove={() => onChange({ ...product, images: { ...product.images, details: product.images.details.filter((_, position) => position !== index) } })} />
-          </div>
-        ))}
-      </section>
-
-      <section className={styles.section}>
-        <SectionTitle title="Aplicação" />
-        <ImageField label="Imagem de aplicação" value={product.application.image} onChange={(image) => onChange({ ...product, application: { ...product.application, image } })} onPick={() => onPickAsset({ kind: "application" })} />
-        <LocalizedFields label="Título" value={product.application.title} onChange={(title) => onChange({ ...product, application: { ...product.application, title } })} />
-        <LocalizedFields label="Texto" value={product.application.text} onChange={(text) => onChange({ ...product, application: { ...product.application, text } })} multiline />
-      </section>
-
-      <section className={styles.section}>
-        <SectionTitle title="Desenho e ficha técnica" />
-        <ImageField label="Desenho técnico" value={product.technicalDrawing} onChange={(technicalDrawing) => onChange({ ...product, technicalDrawing })} onPick={() => onPickAsset({ kind: "drawing" })} />
-        <label className={styles.field}><span>Arquivo PDF (opcional)</span><div className={styles.pathControl}><input value={product.technicalFile} onChange={(event) => onChange({ ...product, technicalFile: event.target.value })} placeholder="/fichas/produto.pdf" /><button type="button" className={styles.smallButton} onClick={() => onPickAsset({ kind: "file" })}>Escolher</button></div></label>
-      </section>
-
-      <section className={styles.section}>
-        <SectionTitle title="Produtos relacionados" />
-        <div className={styles.relatedGrid}>
-          {products.filter((other) => other.id !== product.id).map((other) => (
-            <label key={other.id} className={styles.checkRow}>
-              <input type="checkbox" checked={product.relatedProducts.includes(other.slug)} disabled={!other.slug} onChange={(event) => onChange({ ...product, relatedProducts: event.target.checked ? [...product.relatedProducts, other.slug] : product.relatedProducts.filter((slug) => slug !== other.slug) })} />
-              <span>{other.name.pt || other.slug || "Sem nome"}</span>
-            </label>
-          ))}
-        </div>
-      </section>
-    </div>
-  );
+    <div className={styles.wizardFooter}><button type="button" className={styles.toolbarButton} disabled={step === 0} onClick={() => setStep(step - 1)}><ArrowLeft size={15} />Voltar</button><span>As alterações são salvas automaticamente neste navegador.</span><button type="button" className={styles.primaryButton} disabled={step === steps.length - 1} onClick={() => setStep(step + 1)}>Próxima etapa <ArrowRight size={15} /></button></div>
+  </div>;
 }

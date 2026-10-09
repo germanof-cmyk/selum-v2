@@ -6,10 +6,11 @@ import Link from "next/link";
 import { ArrowRight, Box, Cog, Search, Truck } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { projectLocation, projectText, type EditorProject } from "@/lib/projects";
+import { categoryName, type ContentCategory } from "@/lib/content-categories";
 import ProjectCard from "./ProjectCard";
 import styles from "./projects.module.css";
 
-export default function ProjectsPageClient({ locale, projects }: { locale: string; projects: EditorProject[] }) {
+export default function ProjectsPageClient({ locale, projects, categories }: { locale: string; projects: EditorProject[]; categories: ContentCategory[] }) {
   const t = useTranslations("projectsPage");
   const [category, setCategory] = useState("");
   const [query, setQuery] = useState("");
@@ -17,10 +18,10 @@ export default function ProjectsPageClient({ locale, projects }: { locale: strin
     (a.projectsOrder ?? Number.MAX_SAFE_INTEGER) - (b.projectsOrder ?? Number.MAX_SAFE_INTEGER) ||
     a.slug.localeCompare(b.slug)
   );
-  const categories = [...new Set(sorted.map((project) => projectText(project.category, locale).trim()).filter(Boolean))];
+  const visibleCategories = categories.filter((item) => item.active && sorted.some((project) => project.categoryId === item.id)).sort((a, b) => a.order - b.order);
   const normalizedQuery = query.trim().toLocaleLowerCase(locale);
   const visible = sorted.filter((project) => {
-    if (category && projectText(project.category, locale).trim() !== category) return false;
+    if (category && project.categoryId !== category) return false;
     if (!normalizedQuery) return true;
     return [projectText(project.name, locale), projectText(project.category, locale), projectLocation(project, locale)]
       .some((value) => value.toLocaleLowerCase(locale).includes(normalizedQuery));
@@ -46,7 +47,8 @@ export default function ProjectsPageClient({ locale, projects }: { locale: strin
           {projects.length > 0 ? <>
             <div className={styles.toolbar}>
               <div className={styles.filters} role="group" aria-label={t("filterLabel")}>
-                {["", ...categories].map((item) => <button key={item} type="button" aria-pressed={category === item} className={category === item ? styles.filterActive : ""} onClick={() => setCategory(item)}>{item || t("all")}</button>)}
+                <button type="button" aria-pressed={!category} className={!category ? styles.filterActive : ""} onClick={() => setCategory("")}>{t("all")}</button>
+                {visibleCategories.map((item) => <button key={item.id} type="button" aria-pressed={category === item.id} className={category === item.id ? styles.filterActive : ""} onClick={() => setCategory(item.id)}>{categoryName(item, locale)}</button>)}
               </div>
               <label className={styles.search}><Search size={17} strokeWidth={1.8} /><input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder={t("search")} aria-label={t("search")} /></label>
             </div>

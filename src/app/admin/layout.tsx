@@ -16,8 +16,8 @@ export const metadata: Metadata = {
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt" className={spaceGrotesk.variable}>
-      <body
+    <div className={spaceGrotesk.variable}>
+      <div
         style={{
           background: "#080808",
           color: "#F2F0EC",
@@ -60,7 +60,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </span>
         </div>
         {children}
-      </body>
-    </html>
+      </div>
+    </div>
   );
 }

@@ -2,57 +2,72 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { Plus, Search, Trash2, Upload } from "lucide-react";
+import { ChevronDown, FolderKanban, GripVertical, ImagePlus, Menu, Package, Plus, Search, Trash2, Upload, X } from "lucide-react";
 import AssetPicker from "./AssetPicker";
+import CategoriesManager from "./CategoriesManager";
+import { useManagedCategories } from "./useManagedCategories";
 import type { EditorAsset, LocalizedText } from "@/lib/catalog-editor";
-import { emptyProject, exportProjects, importProjects, PROJECTS_STORAGE_KEY, UNVERIFIED_PROJECT_IMAGES, type EditorProject } from "@/lib/projects";
+import type { ContentCategory } from "@/lib/content-categories";
+import { slugify, uniqueSlug } from "@/lib/catalog-editor";
+import { emptyProject, exportProjects, UNVERIFIED_PROJECT_IMAGES, type EditorProject } from "@/lib/projects";
 import styles from "./catalog-editor.module.css";
 
-const locales = ["pt", "es", "en"] as const;
-const statusLabel = { draft: "Rascunho", review: "Revisar", approved: "Aprovado" };
-
-function LocalizedInput({ label, value, onChange }: {
-  label: string; value: LocalizedText; onChange: (value: LocalizedText) => void;
-}) {
-  return <div className={styles.localizedGroup}>
-    <span className={styles.fieldLegend}>{label}</span>
-    <div className={styles.languageGrid}>{locales.map((locale) => <label className={styles.field} key={locale}>
-      <span>{locale.toUpperCase()}</span>
-      <input value={value[locale]} onChange={(event) => onChange({ ...value, [locale]: event.target.value })} />
-    </label>)}</div>
-  </div>;
+function moveItem<T>(items: T[], from: number, to: number) {
+  if (from === to || from < 0 || to < 0 || to >= items.length) return items;
+  const copy = [...items];
+  const [moved] = copy.splice(from, 1);
+  copy.splice(to, 0, moved);
+  return copy;
 }
 
-export default function ProjectsEditor({ initialProjects, assets, onSwitch }: {
-  initialProjects: EditorProject[]; assets: EditorAsset[]; onSwitch: () => void;
+function TranslationFields({ label, value, onChange }: { label: string; value: LocalizedText; onChange: (next: LocalizedText) => void }) {
+  return <div className={styles.translationGroup}><label className={styles.field}><span>{label}</span><input value={value.pt} onChange={(event) => onChange({ ...value, pt: event.target.value })} /></label><details className={styles.translationDetails}><summary>Adicionar traduções <ChevronDown size={14} /></summary><div className={styles.fieldGrid}><label className={styles.field}><span>Inglês</span><input value={value.en} onChange={(event) => onChange({ ...value, en: event.target.value })} /></label><label className={styles.field}><span>Espanhol</span><input value={value.es} onChange={(event) => onChange({ ...value, es: event.target.value })} /></label></div></details></div>;
+}
+
+export default function ProjectsEditor({ initialProjects, initialCategories, assets, onSwitch }: {
+  initialProjects: EditorProject[]; initialCategories: ContentCategory[]; assets: EditorAsset[]; onSwitch: () => void;
 }) {
+  const categoryManager = useManagedCategories("projects", initialCategories);
+  const { categories, setCategories, publishCategories } = categoryManager;
+  const [categoriesOpen, setCategoriesOpen] = useState(false);
   const [projects, setProjects] = useState(initialProjects);
   const [selectedId, setSelectedId] = useState<string | null>(initialProjects[0]?.id ?? null);
   const [query, setQuery] = useState("");
   const [loaded, setLoaded] = useState(false);
-  const [saved, setSaved] = useState(false);
+  const [savedSnapshot, setSavedSnapshot] = useState("");
   const [notice, setNotice] = useState("");
   const [publishing, setPublishing] = useState(false);
-  const [publishedSnapshot, setPublishedSnapshot] = useState(JSON.stringify(exportProjects(initialProjects)));
-  const [assetTarget, setAssetTarget] = useState<"cover" | null>(null);
+  const [publishedSnapshot, setPublishedSnapshot] = useState("");
+  const [assetTarget, setAssetTarget] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
   const [uploadedAssets, setUploadedAssets] = useState<EditorAsset[]>([]);
   const uploadRef = useRef<HTMLInputElement>(null);
+  const pendingSave = useRef<Promise<void>>(Promise.resolve());
+  const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const draggedId = useRef<string | null>(null);
 
   useEffect(() => {
     const frame = requestAnimationFrame(() => {
-      try {
-        const raw = localStorage.getItem(PROJECTS_STORAGE_KEY);
-        if (raw) {
-          const restored = importProjects(JSON.parse(raw), { draft: true });
-          setProjects(restored);
-          setSelectedId(restored[0]?.id ?? null);
-        }
-      } catch { setNotice("Não foi possível ler o rascunho local de projetos."); }
+      let restored = initialProjects;
+      restored = restored.map((project) => {
+        if (project.categoryId) return project;
+        const category = initialCategories.find((item) => item.name.pt.trim() === project.category.pt.trim());
+        return category ? { ...project, categoryId: category.id } : project;
+      });
+      if (sessionStorage.getItem("selum.new-project") === "1") {
+        sessionStorage.removeItem("selum.new-project");
+        const next = emptyProject();
+        next.slug = uniqueSlug("", restored.map((item) => item.slug), "novo-projeto");
+        restored = [...restored, next];
+        setSelectedId(next.id);
+      } else setSelectedId(restored[0]?.id ?? null);
+      setProjects(restored);
       setLoaded(true);
     });
     return () => cancelAnimationFrame(frame);
-  }, []);
+  }, [initialProjects, initialCategories]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -60,7 +75,7 @@ export default function ProjectsEditor({ initialProjects, assets, onSwitch }: {
       .then(async (response) => {
         if (!response.ok) throw new Error("Não foi possível consultar os projetos publicados.");
         const result = await response.json();
-        setPublishedSnapshot(JSON.stringify(result.projects));
+        setPublishedSnapshot(JSON.stringify(result.published));
       })
       .catch((error) => { if (error.name !== "AbortError") setNotice(error.message); });
     return () => controller.abort();
@@ -68,158 +83,151 @@ export default function ProjectsEditor({ initialProjects, assets, onSwitch }: {
 
   useEffect(() => {
     if (!loaded) return;
-    try {
-      localStorage.setItem(PROJECTS_STORAGE_KEY, JSON.stringify(projects));
-      const frame = requestAnimationFrame(() => setSaved(true));
-      return () => cancelAnimationFrame(frame);
-    } catch {
-      const frame = requestAnimationFrame(() => setNotice("Não foi possível salvar o rascunho local de projetos."));
-      return () => cancelAnimationFrame(frame);
-    }
+    const snapshot = JSON.stringify(projects);
+    const timeout = setTimeout(() => {
+      saveTimer.current = null;
+      pendingSave.current = pendingSave.current.catch(() => {}).then(async () => {
+        const response = await fetch("/api/catalog-editor/projects", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "save", projects }) });
+        if (!response.ok) throw new Error((await response.json()).error);
+        setSavedSnapshot(snapshot);
+      }).catch((error) => setNotice(error instanceof Error ? error.message : "Não foi possível salvar o rascunho."));
+    }, 700);
+    saveTimer.current = timeout;
+    return () => clearTimeout(timeout);
   }, [projects, loaded]);
 
   const selected = projects.find((project) => project.id === selectedId) ?? null;
-  const filtered = projects.filter((project) => `${project.name.pt} ${project.slug}`.toLocaleLowerCase("pt").includes(query.toLocaleLowerCase("pt")));
+  const selectedCategory = selected ? categories.find((category) => category.id === selected.categoryId ||
+    (!selected.categoryId && category.name.pt.trim() === selected.category.pt.trim())) : null;
+  const filtered = projects.filter((project) => (project.name.pt + " " + project.slug).toLocaleLowerCase("pt").includes(query.toLocaleLowerCase("pt")));
   let currentSnapshot = "";
-  try { currentSnapshot = JSON.stringify(exportProjects(projects)); } catch { /* Identificadores internos são validados ao publicar. */ }
+  try { currentSnapshot = JSON.stringify(exportProjects(projects.filter((item) => item.status === "approved" && item.active))); } catch { /* O editor mostra uma mensagem humana ao publicar. */ }
   const unpublished = currentSnapshot !== publishedSnapshot;
-  const visibilityIssues = selected ? [
-    selected.status !== "approved" ? "Status deve ser Aprovado." : "",
-    !selected.active ? "Marque Ativo." : "",
-    !Object.values(selected.name).some((value) => value.trim()) ? "Informe o nome do projeto." : "",
-    !Object.values(selected.category).some((value) => value.trim()) ? "Informe a categoria." : "",
-    !selected.coverImage.trim() ? "Adicione uma foto de capa do projeto." : "",
-    UNVERIFIED_PROJECT_IMAGES.has(selected.coverImage) ? "A capa selecionada é um dos arquivos antigos idênticos e não comprova este evento." : "",
-    selected.coverImage.trim() && !selected.coverImageValidated ? "Confirme que a capa pertence a este projeto." : "",
+  const saved = loaded && savedSnapshot === JSON.stringify(projects);
+  const issues = selected ? [
+    !selected.name.pt.trim() ? "Falta o nome do evento." : "",
+    !selectedCategory?.name.pt.trim() ? "Escolha uma categoria." : "",
+    !selected.coverImage.trim() ? "Falta uma imagem principal." : "",
+    selected.coverImage && !selected.coverImageValidated ? "Confirme que a imagem pertence a este evento." : "",
   ].filter(Boolean) : [];
 
-  function update(next: EditorProject) {
-    setProjects((current) => current.map((project) => project.id === next.id ? next : project));
-    setSaved(false);
-    setNotice("");
+  function update(next: EditorProject) { setProjects((current) => current.map((item) => item.id === next.id ? next : item)); setNotice(""); }
+  function updateName(next: LocalizedText) {
+    if (!selected) return;
+    const used = projects.filter((item) => item.id !== selected.id).map((item) => item.slug);
+    const auto = !selected.name.pt || selected.slug === slugify(selected.name.pt) || selected.slug.startsWith("novo-projeto");
+    update({ ...selected, name: next, slug: auto ? uniqueSlug(next.pt, used, "novo-projeto") : selected.slug });
   }
-
+  function changeCategory(categoryId: string) {
+    if (!selected) return;
+    const category = categories.find((item) => item.id === categoryId);
+    update({ ...selected, categoryId, category: category?.name ?? { pt: "", es: "", en: "" } });
+  }
+  function categoryUsage(category: ContentCategory) {
+    return projects.filter((project) => project.categoryId === category.id ||
+      (!project.categoryId && project.category.pt.trim() === category.name.pt.trim())).length;
+  }
   function add() {
-    const project = emptyProject();
-    let candidate = "novo-projeto";
-    let number = 2;
-    while (projects.some((item) => item.slug === candidate)) candidate = `novo-projeto-${number++}`;
-    project.slug = candidate;
-    setProjects((current) => [...current, project]);
-    setSelectedId(project.id);
-    setQuery("");
-    setSaved(false);
+    const next = emptyProject();
+    next.slug = uniqueSlug("", projects.map((item) => item.slug), "novo-projeto");
+    setProjects((current) => [...current, next]);
+    setSelectedId(next.id); setQuery(""); setSidebarOpen(false);
   }
-
-  function remove(project: EditorProject) {
-    if (!window.confirm(`Excluir "${project.name.pt || project.slug}" do rascunho de projetos?`)) return;
-    const remaining = projects.filter((item) => item.id !== project.id);
-    setProjects(remaining);
-    if (selectedId === project.id) setSelectedId(remaining[0]?.id ?? null);
-  }
-
-  async function publish() {
-    setPublishing(true);
+  async function remove(project: EditorProject) {
+    if (!window.confirm("Excluir “" + (project.name.pt || "Novo projeto") + "” do Supabase e do site?")) return;
+    if (saveTimer.current) clearTimeout(saveTimer.current);
+    saveTimer.current = null;
     setNotice("");
     try {
+      await pendingSave.current;
       const response = await fetch("/api/catalog-editor/projects", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ projects }),
+        body: JSON.stringify({ action: "delete", targetId: project.id }),
       });
       const result = await response.json();
-      if (!response.ok) throw new Error(result.error || "Não foi possível publicar projetos.");
-      setPublishedSnapshot(JSON.stringify(result.projects));
-      setNotice(`Projetos publicados. ${result.visibleCount} visível(is) em Projetos; ${result.homeCount} na Home.`);
+      if (!response.ok) throw new Error(result.error || "Não foi possível excluir o projeto.");
+      const remaining = projects.filter((item) => item.id !== project.id);
+      const refreshed = Array.isArray(result.projects) ? result.projects as EditorProject[] : remaining;
+      setProjects(refreshed);
+      setPublishedSnapshot(JSON.stringify(result.published));
+      if (selectedId === project.id) setSelectedId(refreshed.find((item) => item.id !== project.id)?.id ?? null);
+      setNotice("Projeto excluído do Supabase.");
     } catch (error) {
-      setNotice(error instanceof Error ? error.message : "Não foi possível publicar projetos.");
-    } finally { setPublishing(false); }
+      setNotice(error instanceof Error ? error.message : "Não foi possível excluir o projeto.");
+    }
   }
-
+  function reorder(sourceId: string, targetId: string) {
+    const from = projects.findIndex((item) => item.id === sourceId);
+    const to = projects.findIndex((item) => item.id === targetId);
+    if (from < 0 || to < 0 || from === to) return;
+    const ordered = moveItem(projects, from, to);
+    let home = 0;
+    setProjects(ordered.map((item, index) => ({ ...item, projectsOrder: index + 1, homeOrder: item.showOnHome ? ++home : item.homeOrder })));
+  }
+  async function publish() {
+    if (!selected || issues.length) { setNotice(issues[0] || "Selecione um projeto."); return; }
+    setPublishing(true); setNotice("");
+    try {
+      await pendingSave.current;
+      await publishCategories();
+      const next = projects.map((item) => item.id === selected.id ? { ...item, status: "approved" as const } : item);
+      const response = await fetch("/api/catalog-editor/projects", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "publish", projects: next, targetId: selected.id }) });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || "Não foi possível publicar projetos.");
+      setProjects(next);
+      setPublishedSnapshot(JSON.stringify(result.published));
+      setNotice("✓ Projeto publicado. " + result.visibleCount + " projeto(s) visível(is) no site.");
+    } catch (error) { setNotice(error instanceof Error ? error.message : "Não foi possível publicar projetos."); }
+    finally { setPublishing(false); }
+  }
   function selectAsset(asset: string) {
     if (!selected) return;
-    if (UNVERIFIED_PROJECT_IMAGES.has(asset)) {
-      setNotice("Os três arquivos antigos são idênticos e não podem ser usados como imagem validada de um evento.");
-      setAssetTarget(null);
-      return;
-    }
+    if (UNVERIFIED_PROJECT_IMAGES.has(asset)) { setNotice("Esta foto antiga não comprova o evento. Escolha outra imagem."); setAssetTarget(false); return; }
     update({ ...selected, coverImage: asset, coverImageValidated: false });
-    setAssetTarget(null);
+    setAssetTarget(false);
   }
-
-  function startUpload() {
-    uploadRef.current?.click();
-  }
-
   async function uploadImage(file: File | undefined) {
     if (!file || !selected) return;
-    setUploading(true);
-    setNotice("");
+    setUploading(true); setNotice("");
     try {
-      const form = new FormData();
-      form.set("file", file);
+      const form = new FormData(); form.set("file", file);
       const response = await fetch("/api/catalog-editor/projects/assets", { method: "POST", body: form });
       const result = await response.json();
-      if (!response.ok) throw new Error(result.error || "Não foi possível enviar a imagem.");
+      if (!response.ok) throw new Error(result.error || "Não foi possível enviar a foto.");
       const asset = { path: result.path, name: result.name, folder: "images/projects", type: "image" as const };
       setUploadedAssets((current) => [...current, asset]);
       update({ ...selected, coverImage: asset.path, coverImageValidated: false });
-      setNotice("Imagem enviada. Confirme a associação da capa com o projeto antes de publicar.");
-    } catch (error) {
-      setNotice(error instanceof Error ? error.message : "Não foi possível enviar a imagem.");
-    } finally {
-      setUploading(false);
-      if (uploadRef.current) uploadRef.current.value = "";
-    }
+      setNotice("Foto enviada. Confirme que ela pertence ao evento antes de publicar.");
+    } catch (error) { setNotice(error instanceof Error ? error.message : "Não foi possível enviar a foto."); }
+    finally { setUploading(false); if (uploadRef.current) uploadRef.current.value = ""; }
   }
 
   return <main className={styles.editor}>
-    <nav className={styles.areaTabs} aria-label="Áreas do editor"><button type="button" onClick={onSwitch}>Produtos</button><button className={styles.areaTabActive} type="button">Projetos</button></nav>
-    <header className={styles.topbar}>
-      <div><span className={styles.brand}>SELUM / INTERNO</span><h1>Projetos</h1><p>Rascunho local. A publicação é manual e só projetos aprovados com capa validada aparecem no site.</p></div>
-      <div className={styles.toolbar}><button className={styles.publishButton} type="button" disabled={!loaded || publishing || !unpublished} onClick={() => void publish()}><Upload size={15} />{publishing ? "Publicando..." : "Publicar alterações"}</button></div>
-    </header>
-    <div className={styles.statusBar}><span className={saved ? styles.notice : undefined}>{loaded ? saved ? "● Rascunho salvo neste navegador" : "Salvando rascunho..." : "Carregando rascunho..."}</span><span className={unpublished ? styles.warning : styles.notice}>{unpublished ? "Ainda não publicado no site" : "✓ Dados de projetos publicados"}</span>{notice && <span className={notice.startsWith("Projetos publicados") ? styles.notice : styles.warning}>{notice}</span>}</div>
+    <header className={styles.topbar}><div className={styles.topbarTitle}><button type="button" className={styles.mobileListButton} onClick={() => setSidebarOpen(true)}><Menu size={17} />Projetos</button><span className={styles.brand}>PROJETOS / {categoriesOpen ? "CATEGORIAS" : "EDIÇÃO"}</span><h1>{categoriesOpen ? "Categorias" : selected?.name.pt || "Novo projeto"}</h1></div><div className={styles.toolbar}><span className={(categoriesOpen ? categoryManager.saved : saved) ? styles.notice : styles.warning}>{categoriesOpen ? categoryManager.saved ? "✓ Salvo automaticamente" : "Salvando..." : loaded ? saved ? "✓ Salvo automaticamente" : "Salvando..." : "Carregando..."}</span>{categoriesOpen ? <button type="button" className={styles.publishButton} disabled={categoryManager.publishing} onClick={() => void publishCategories().catch(() => {})}>Publicar categorias</button> : <><button type="button" className={styles.toolbarButton} disabled={!selected} onClick={() => setPreviewOpen(true)}>Visualizar</button><button type="button" className={styles.publishButton} disabled={publishing || !selected || issues.length > 0} onClick={() => void publish()}>{publishing ? "Publicando..." : "Publicar"}</button></>}</div></header>
+    <div className={styles.statusBar}>{categoriesOpen ? <><span className={categoryManager.saved ? styles.notice : styles.warning}>{categoryManager.saved ? "✓ Salvo automaticamente" : "Salvando..."}</span><span className={categoryManager.unpublished ? styles.warning : styles.notice}>{categoryManager.unpublished ? "Alterações não publicadas" : "✓ Categorias atualizadas"}</span></> : <><span className={saved ? styles.notice : undefined}>{loaded ? saved ? "✓ Salvo automaticamente" : "Salvando..." : "Carregando..."}</span><span className={unpublished ? styles.warning : styles.notice}>{unpublished ? "Alterações não publicadas" : "✓ Projetos atualizados"}</span>{issues.length > 0 && <span className={styles.warning}>⚠ {issues[0]}</span>}{notice && <span className={styles.warning}>{notice}</span>}</>}</div>
     <div className={styles.workspace}>
-      <aside className={styles.sidebar}>
-        <div className={styles.sidebarHeader}><h2>Projetos <span>{projects.length}</span></h2><button className={styles.addButton} type="button" onClick={add}><Plus size={15} />Novo projeto</button></div>
-        <label className={styles.search}><Search size={15} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Buscar por nome..." /></label>
-        <div className={styles.productList}>{filtered.map((project) => <div className={`${styles.productListItem} ${selectedId === project.id ? styles.productListItemActive : ""}`} key={project.id}>
-          <button type="button" className={styles.productSelect} onClick={() => setSelectedId(project.id)}><strong>{project.name.pt || project.slug}</strong><span>{statusLabel[project.status]}{!project.active ? " · Inativo" : ""}{!project.coverImageValidated ? " · Sem capa validada" : ""}</span></button>
-          <div className={styles.productActions}><button type="button" title="Excluir" aria-label={`Excluir ${project.name.pt || project.slug}`} onClick={() => remove(project)}><Trash2 size={13} /></button></div>
-        </div>)}{filtered.length === 0 && <p className={styles.emptySidebar}>Nenhum projeto encontrado.</p>}</div>
+      {sidebarOpen && <button type="button" className={styles.sidebarBackdrop} aria-label="Fechar lista" onClick={() => setSidebarOpen(false)} />}
+      <aside className={styles.sidebar + (sidebarOpen ? " " + styles.sidebarOpen : "")}>
+        <div className={styles.sidebarBrand}><span>SELUM <small>/ INTERNO</small></span><button type="button" className={styles.sidebarClose} aria-label="Fechar menu" onClick={() => setSidebarOpen(false)}><X size={18} /></button></div>
+        <nav className={styles.sidebarNav} aria-label="Conteúdo"><span>CONTEÚDO</span><button type="button" onClick={onSwitch}><Package size={17} />Produtos</button><button type="button" className={!categoriesOpen ? styles.sidebarNavActive : ""} onClick={() => { setCategoriesOpen(false); setSidebarOpen(false); }}><FolderKanban size={17} />Projetos / Eventos</button><button type="button" className={categoriesOpen ? styles.sidebarNavActive : styles.sidebarSubnav} onClick={() => { setCategoriesOpen(true); setSidebarOpen(false); }}>Categorias</button></nav>
+        {!categoriesOpen && <><div className={styles.sidebarHeader}><h2>Projetos <span>{projects.length}</span></h2><button type="button" className={styles.sidebarClose} aria-label="Fechar lista" onClick={() => setSidebarOpen(false)}><X size={18} /></button><button className={styles.addButton} type="button" onClick={add}><Plus size={15} />Novo projeto</button></div>
+        <label className={styles.search}><Search size={15} /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Buscar projetos..." /></label><p className={styles.reorderHint}>Arraste para mudar a ordem de exibição.</p>
+        <div className={styles.productList}>{filtered.map((project) => <div className={styles.productListItem + (selectedId === project.id ? " " + styles.productListItemActive : "")} key={project.id} draggable onDragStart={() => { draggedId.current = project.id; }} onDragOver={(event) => event.preventDefault()} onDrop={(event) => { event.preventDefault(); if (draggedId.current) reorder(draggedId.current, project.id); draggedId.current = null; }}><GripVertical size={15} className={styles.listGrip} /><button type="button" className={styles.productSelect} onClick={() => { setSelectedId(project.id); setSidebarOpen(false); }}><strong>{project.name.pt || "Novo projeto"}</strong><span className={project.status === "approved" && project.active ? styles.badgePublished : styles.badgeDraft}>{!project.name.pt || !project.coverImageValidated ? "Incompleto" : project.status === "approved" ? project.active ? "Publicado" : "Oculto" : project.status === "review" ? "Revisar" : "Rascunho"}</span></button><div className={styles.productActions}><button type="button" title="Excluir" aria-label={"Excluir " + (project.name.pt || "projeto")} onClick={() => remove(project)}><Trash2 size={13} /></button></div></div>)}{filtered.length === 0 && <p className={styles.emptySidebar}>Nenhum projeto encontrado.</p>}</div></>}
       </aside>
-      <div className={styles.content}>{selected ? <div className={styles.form}>
-        <div className={`${styles.visibilityPanel} ${visibilityIssues.length ? styles.visibilityBlocked : styles.visibilityReady}`}>
-          <strong>{visibilityIssues.length ? "Este projeto não aparece no site" : unpublished ? "Pronto para publicar" : "Apto a aparecer em Projetos"}</strong>
-          {visibilityIssues.length ? <ul>{visibilityIssues.map((issue) => <li key={issue}>{issue}</li>)}</ul> : <p>{selected.showOnHome ? "Também aparecerá na Home após publicar." : "Para aparecer também na Home, marque Exibir na Home."}</p>}
-          {unpublished && <p>Depois de concluir os campos, clique em Publicar alterações.</p>}
-        </div>
-        <section className={styles.section}><div className={styles.sectionTitle}><h2>Projeto</h2></div>
-          <LocalizedInput label="Nome do projeto" value={selected.name} onChange={(name) => update({ ...selected, name })} />
-          <LocalizedInput label="Categoria" value={selected.category} onChange={(category) => update({ ...selected, category })} />
-          <p className={styles.emptyHint}>PT, ES e EN podem ser preenchidos gradualmente. Enquanto houver campos vazios, o site usa o texto disponível em outro idioma.</p>
+      <div className={styles.content}>{categoriesOpen ? <CategoriesManager scope="projects" categories={categories} onChange={setCategories} onPublish={() => void publishCategories().catch(() => {})} onBack={() => setCategoriesOpen(false)} usageCount={categoryUsage} saved={categoryManager.saved} publishing={categoryManager.publishing} notice={categoryManager.notice} /> : selected ? <div className={styles.wizard} key={selected.id}>
+        <div className={styles.wizardHeading}><div><span className={styles.brand}>CADASTRO DE PROJETO</span><h2>{selected.name.pt || "Novo projeto"}</h2></div></div>
+        <section className={styles.wizardPanel}><h3>Informações do evento</h3><p className={styles.stepIntro}>Preencha as informações principais. Os outros idiomas podem ser adicionados depois.</p>
+          <TranslationFields label="Nome do evento" value={selected.name} onChange={updateName} />
+          <div className={styles.categorySelectRow}><label className={styles.field}><span>Categoria</span><select value={selectedCategory?.id || ""} onChange={(event) => changeCategory(event.target.value)}><option value="">Selecione uma categoria</option>{categories.filter((category) => category.name.pt.trim() && (category.active || category.id === selectedCategory?.id)).map((category) => <option key={category.id} value={category.id}>{category.name.pt || "Nova categoria"}{!category.active ? " (inativa)" : ""}</option>)}</select></label><button type="button" className={styles.toolbarButton} onClick={() => setCategoriesOpen(true)}>Gerenciar categorias</button></div>
+          <div className={styles.fieldGrid}><label className={styles.field}><span>Cidade</span><input value={selected.location.city} onChange={(event) => update({ ...selected, location: { ...selected.location, city: event.target.value } })} /></label><label className={styles.field}><span>Estado</span><input value={selected.location.state} onChange={(event) => update({ ...selected, location: { ...selected.location, state: event.target.value } })} /></label><label className={styles.field}><span>País</span><input value={selected.location.country} placeholder="Brasil" onChange={(event) => update({ ...selected, location: { ...selected.location, country: event.target.value } })} /></label></div>
         </section>
-        <section className={styles.section}><div className={styles.sectionTitle}><h2>Localização</h2></div><div className={styles.languageGrid}>
-          {(["city", "state", "country"] as const).map((field) => <label className={styles.field} key={field}><span>{{ city: "Cidade", state: "Estado", country: "País ou código ISO" }[field]}</span><input value={selected.location[field]} onChange={(event) => update({ ...selected, location: { ...selected.location, [field]: event.target.value } })} /></label>)}
-        </div></section>
-        <section className={styles.section}><div className={styles.sectionTitle}><h2>Imagem de capa</h2></div>
-          <div className={styles.pathControl}><button type="button" className={styles.smallButton} onClick={() => setAssetTarget("cover")}>Selecionar imagem</button><button type="button" className={styles.smallButton} disabled={uploading} onClick={startUpload}>{uploading ? "Enviando..." : "Enviar foto"}</button></div>
-          {selected.coverImage && <div className={styles.catalogHeroPreview}><Image src={selected.coverImage} alt="Prévia da capa" fill sizes="360px" /></div>}
-          <label className={styles.checkRow}><input type="checkbox" checked={selected.coverImageValidated} disabled={!selected.coverImage} onChange={(event) => update({ ...selected, coverImageValidated: event.target.checked })} /> Confirmo que esta imagem pertence a este projeto</label>
-          <p className={styles.emptyHint}>Use apenas imagens que pertençam ao projeto. Os três arquivos antigos idênticos não podem ser selecionados.</p>
-        </section>
-        <section className={styles.section}><div className={styles.sectionTitle}><h2>Publicação e ordem</h2></div>
-          <div className={styles.fieldGrid}>
-            <label className={styles.field}><span>Status</span><select value={selected.status} onChange={(event) => update({ ...selected, status: event.target.value as EditorProject["status"] })}><option value="draft">Rascunho</option><option value="review">Revisar</option><option value="approved">Aprovado</option></select></label>
-            <label className={styles.checkRow}><input type="checkbox" checked={selected.active} onChange={(event) => update({ ...selected, active: event.target.checked })} /> Ativo</label>
-            <label className={styles.field}><span>Ordem na página Projetos</span><input type="number" value={selected.projectsOrder ?? ""} onChange={(event) => update({ ...selected, projectsOrder: event.target.value === "" ? null : Number(event.target.value) })} /></label>
-            <label className={styles.checkRow}><input type="checkbox" checked={selected.showOnHome} onChange={(event) => update({ ...selected, showOnHome: event.target.checked })} /> Exibir na Home</label>
-            <label className={styles.field}><span>Ordem na Home</span><input type="number" value={selected.homeOrder ?? ""} onChange={(event) => update({ ...selected, homeOrder: event.target.value === "" ? null : Number(event.target.value) })} /></label>
-          </div>
-        </section>
-      </div> : <div className={styles.emptyContent}><h2>Selecione ou crie um projeto</h2><p>Os dados serão salvos automaticamente neste navegador.</p><button type="button" className={styles.primaryButton} onClick={add}><Plus size={15} />Novo projeto</button></div>}</div>
+        <section className={styles.wizardPanel}><h3>Foto do evento</h3><p className={styles.stepIntro}>Selecione uma foto que pertença a este evento.</p><div className={styles.projectPhoto}>{selected.coverImage ? <Image src={selected.coverImage} alt="Prévia do projeto" fill sizes="480px" /> : <ImagePlus size={36} strokeWidth={1.4} />}</div>{selected.coverImage && <p className={styles.fileName}>{decodeURIComponent(selected.coverImage.split("/").pop() || "")}</p>}<div className={styles.photoActions}><button type="button" className={styles.smallButton} onClick={() => setAssetTarget(true)}><ImagePlus size={15} />{selected.coverImage ? "Trocar imagem" : "Selecionar da biblioteca"}</button><button type="button" className={styles.smallButton} disabled={uploading} onClick={() => uploadRef.current?.click()}><Upload size={15} />{uploading ? "Enviando..." : "Enviar nova foto"}</button>{selected.coverImage && <button type="button" className={styles.textDanger} onClick={() => update({ ...selected, coverImage: "", coverImageValidated: false })}>Remover imagem</button>}</div><label className={styles.checkRow}><input type="checkbox" checked={selected.coverImageValidated} disabled={!selected.coverImage} onChange={(event) => update({ ...selected, coverImageValidated: event.target.checked })} />Confirmo que esta foto pertence a este evento</label></section>
+        <section className={styles.wizardPanel}><h3>Exibição no site</h3><div className={styles.visibilityOptions}><label><input type="checkbox" checked={selected.active} onChange={(event) => update({ ...selected, active: event.target.checked })} /><span><strong>Mostrar na página Projetos</strong><small>Este projeto aparece no portfólio após a publicação.</small></span></label><label><input type="checkbox" checked={selected.showOnHome} onChange={(event) => update({ ...selected, showOnHome: event.target.checked })} /><span><strong>Mostrar na página inicial</strong><small>Este projeto aparecerá também na Home após a publicação.</small></span></label></div><p className={styles.stepIntro}>A posição na lista pode ser alterada arrastando os projetos na barra lateral.</p></section>
+        <section className={styles.wizardPanel}><h3>Revisar e publicar</h3>{issues.length > 0 && <div className={styles.reviewIssues}><strong>Confira antes de publicar:</strong><ul>{issues.map((issue) => <li key={issue}>{issue}</li>)}</ul></div>}<div className={styles.reviewActions}><button type="button" className={styles.toolbarButton} onClick={() => { update({ ...selected, status: "draft" }); setNotice("✓ Rascunho salvo automaticamente neste navegador."); }}>Salvar rascunho</button><button type="button" className={styles.publishButton} disabled={publishing || issues.length > 0} onClick={() => void publish()}>{publishing ? "Publicando..." : "Publicar"}</button></div><details className={styles.advanced}><summary>Opções avançadas <ChevronDown size={14} /></summary><div className={styles.fieldGrid}><label className={styles.field}><span>Identificador da página (slug)</span><input value={selected.slug} onChange={(event) => update({ ...selected, slug: slugify(event.target.value) })} /></label><label className={styles.field}><span>ID interno</span><input value={selected.id} readOnly /></label></div><p className={styles.fileName}>{selected.coverImage}</p></details></section>
+      </div> : <div className={styles.emptyContent}><h2>Selecione ou crie um projeto</h2><button type="button" className={styles.primaryButton} onClick={add}><Plus size={15} />Novo projeto</button></div>}</div>
     </div>
     <input ref={uploadRef} type="file" accept="image/png,image/jpeg,image/webp,image/avif" hidden onChange={(event) => void uploadImage(event.target.files?.[0])} />
-    {assetTarget && <AssetPicker assets={[...assets, ...uploadedAssets].filter((asset) => !UNVERIFIED_PROJECT_IMAGES.has(asset.path))} title="Selecionar imagem" type="image" onSelect={selectAsset} onClose={() => setAssetTarget(null)} />}
+    {previewOpen && selected && <div className={styles.modalBackdrop} role="presentation" onClick={() => setPreviewOpen(false)}><div className={styles.projectPreviewModal} role="dialog" aria-modal="true" aria-label="Prévia do projeto" onClick={(event) => event.stopPropagation()}><div className={styles.modalHeader}><div><span className={styles.brand}>PRÉVIA DO PROJETO</span><h2>{selected.name.pt || "Novo projeto"}</h2><p>{selectedCategory?.name.pt || selected.category.pt}{selected.location.city ? " · " + selected.location.city : ""}</p></div><button type="button" className={styles.iconButton} aria-label="Fechar prévia" onClick={() => setPreviewOpen(false)}><X size={18} /></button></div><div className={styles.projectPhoto}>{selected.coverImage ? <Image src={selected.coverImage} alt={selected.name.pt || "Prévia do projeto"} fill sizes="720px" /> : <ImagePlus size={36} />}</div><p className={styles.previewHelp}>Esta é uma prévia do cadastro atual. A publicação controla o que aparece no site.</p></div></div>}
+    {assetTarget && <AssetPicker assets={[...assets, ...uploadedAssets].filter((asset) => !UNVERIFIED_PROJECT_IMAGES.has(asset.path))} title="Selecionar imagem" type="image" onSelect={selectAsset} onClose={() => setAssetTarget(false)} />}
   </main>;
 }

@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Image from "next/image";
-import { X } from "lucide-react";
+import { Upload, X } from "lucide-react";
 import type { EditorAsset } from "@/lib/catalog-editor";
 import styles from "./catalog-editor.module.css";
 
@@ -10,14 +10,18 @@ export default function AssetPicker({
   assets,
   title,
   type,
+  description,
   onSelect,
   onClose,
+  onUpload,
 }: {
   assets: EditorAsset[];
   title: string;
   type: "image" | "pdf";
+  description?: string;
   onSelect: (path: string) => void;
   onClose: () => void;
+  onUpload?: () => void;
 }) {
   const [query, setQuery] = useState("");
   const [folder, setFolder] = useState("");
@@ -39,12 +43,13 @@ export default function AssetPicker({
         <div className={styles.modalHeader}>
           <div>
             <h2>{title}</h2>
-            <p>Arquivos existentes em public · {filtered.length} resultado(s)</p>
+            <p>{description ?? "Arquivos existentes em public"} · {filtered.length} resultado(s)</p>
           </div>
           <button type="button" className={styles.iconButton} onClick={onClose} aria-label="Fechar">
             <X size={18} />
           </button>
         </div>
+        {onUpload && <button type="button" className={styles.smallButton} onClick={onUpload}><Upload size={15} />Enviar nova imagem</button>}
         <div className={styles.modalFilters}>
           <input autoFocus value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Buscar arquivo..." />
           <select value={folder} onChange={(event) => setFolder(event.target.value)} aria-label="Pasta">
@@ -64,7 +69,7 @@ export default function AssetPicker({
               </button>
             ))}
           </div>
-        ) : <p className={styles.emptyAssets}>Nenhum arquivo encontrado. Você também pode informar um caminho manualmente no campo.</p>}
+        ) : <p className={styles.emptyAssets}>Nenhum arquivo encontrado. Tente outra busca.</p>}
       </div>
     </div>
   );

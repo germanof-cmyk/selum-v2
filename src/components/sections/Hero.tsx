@@ -9,10 +9,10 @@ const fadeUp = (delay: number) => ({
 });
 
 const barItems = [
-  { icon: "⬡", num: "+50", unit: "ton",          desc: "Toneladas fabricadas mensalmente" },
-  { icon: "◈", num: "+4500", unit: "m²",          desc: "Parque fabril próprio" },
-  { icon: "◎", num: "+50",  unit: "colaboradores", desc: "Equipe especializada" },
-  { icon: "◉", num: "NR-1 · NR-14", unit: "",     desc: "Certificações comprovadas" },
+  { icon: "⬡", num: "+50", unit: "ton", desc: "stat_tonnage" },
+  { icon: "◈", num: "+4500", unit: "m²", desc: "stat_facility" },
+  { icon: "◎", num: "+50", unit: "", desc: "stat_team" },
+  { icon: "◉", num: "NR-1 · NR-14", unit: "", desc: "stat_certifications" },
 ];
 
 export default function Hero() {
@@ -337,14 +337,14 @@ export default function Hero() {
               marginBottom: 12,
               letterSpacing: "-0.3px",
             }}>
-              Soluções em estruturas para os<br className="hero-desktop-break" />
+              {t("headlineLine")}<br className="hero-desktop-break" />
               <span style={{
                 color: "transparent",
                 backgroundImage: "linear-gradient(90deg, #2196F3, #00B4D8)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
               }}>
-                maiores eventos da América Latina
+                {t("headlineHighlight")}
               </span>
             </div>
 
@@ -366,11 +366,11 @@ export default function Hero() {
               gap: 10,
               flexWrap: "wrap",
             }}>
-              <span>Box Truss</span>
+              <span>{t("serviceTruss")}</span>
               <span style={{ color: "rgba(33,150,243,0.4)" }}>·</span>
-              <span>Manutenção</span>
+              <span>{t("serviceMaintenance")}</span>
               <span style={{ color: "rgba(33,150,243,0.4)" }}>·</span>
-              <span>Projetos Sob Medida</span>
+              <span>{t("serviceCustom")}</span>
             </div>
           </motion.div>
 
@@ -397,8 +397,9 @@ export default function Hero() {
                   <div style={{ display: "flex", alignItems: "baseline", gap: 4, marginBottom: 3 }}>
                     <div className="bar-num">{item.num}</div>
                     {item.unit && <span className="bar-unit">{item.unit}</span>}
+                    {item.desc === "stat_team" && <span className="bar-unit">{t("stat_team_unit")}</span>}
                   </div>
-                  <div className="bar-desc">{item.desc}</div>
+                  <div className="bar-desc">{t(item.desc)}</div>
                 </div>
               </div>
               <div className="bar-divider" />

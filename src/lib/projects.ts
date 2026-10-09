@@ -6,6 +6,7 @@ export type Project = {
   status: EditorStatus;
   active: boolean;
   name: LocalizedText;
+  categoryId?: string;
   category: LocalizedText;
   location: { city: string; state: string; country: string };
   coverImage: string;
@@ -40,7 +41,7 @@ const newId = () => globalThis.crypto?.randomUUID?.() ?? `project-${Date.now()}-
 export function emptyProject(): EditorProject {
   return {
     id: newId(), slug: "", status: "draft", active: true,
-    name: localized(null), category: localized(null),
+    name: localized(null), categoryId: "", category: localized(null),
     location: { city: "", state: "", country: "" },
     coverImage: "", coverImageValidated: false,
     showOnHome: false, homeOrder: null, projectsOrder: null,
@@ -61,7 +62,7 @@ export function importProjects(value: unknown, { draft = false }: { draft?: bool
       slug: text(source.slug) || key,
       status: status === "review" || status === "approved" ? status : "draft",
       active: source.active !== false,
-      name: localized(source.name), category: localized(source.category),
+      name: localized(source.name), categoryId: text(source.categoryId), category: localized(source.category),
       location: { city: text(location.city), state: text(location.state), country: text(location.country) },
       coverImage: text(source.coverImage),
       coverImageValidated: source.coverImageValidated === true,

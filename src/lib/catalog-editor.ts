@@ -48,6 +48,14 @@ export type EditorAsset = { path: string; name: string; folder: string; type: "i
 export const STORAGE_KEY = "selum.catalog-editor.v1";
 export const emptyText = (): LocalizedText => ({ pt: "", es: "", en: "" });
 export const newId = () => globalThis.crypto?.randomUUID?.() ?? `editor-${Date.now()}-${Math.random()}`;
+export const slugify = (value: string) => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+export function uniqueSlug(value: string, used: string[], fallback: string) {
+  const base = slugify(value) || fallback;
+  let candidate = base;
+  let suffix = 2;
+  while (used.includes(candidate)) candidate = `${base}-${suffix++}`;
+  return candidate;
+}
 
 export function emptyProduct(): EditorProduct {
   return {

@@ -5,8 +5,10 @@ import {
   uploadProductImage,
   deleteProductImage,
 } from "@/lib/supabase";
+import { requireEditor } from "@/lib/content-backend";
 
 export async function actionUploadImage(formData: FormData) {
+  await requireEditor();
   const slug = formData.get("slug") as string;
   const tipo = formData.get("tipo") as "hero" | "gallery";
   const file = formData.get("file") as File;
@@ -36,6 +38,7 @@ export async function actionUploadImage(formData: FormData) {
 }
 
 export async function actionDeleteImage(id: string, storagePath: string) {
+  await requireEditor();
   try {
     const client = createServiceClient();
     await deleteProductImage(id, storagePath, client);
@@ -47,6 +50,7 @@ export async function actionDeleteImage(id: string, storagePath: string) {
 }
 
 export async function actionFetchImages(slug: string) {
+  await requireEditor();
   try {
     const client = createServiceClient();
     const { data, error } = await client

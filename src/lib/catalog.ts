@@ -1,4 +1,5 @@
 import type { ProductPageData } from "@/lib/product-page-data";
+import type { LocalizedText } from "@/lib/catalog-editor";
 
 export type CatalogCategory = "estrutural" | "acessorios" | "acesso" | (string & {});
 
@@ -21,6 +22,7 @@ export type CatalogProduct = {
   tag: string;
   category: CatalogCategory;
   categoryLabel: string;
+  categoryNames?: LocalizedText;
   cardSpecs: string[];
   page: ProductPageData;
   featured?: boolean;

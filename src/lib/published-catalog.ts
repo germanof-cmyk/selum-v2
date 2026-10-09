@@ -1,29 +1,19 @@
-import { readFile, writeFile, mkdir, rename } from "node:fs/promises";
-import path from "node:path";
 import type { CatalogProduct } from "@/lib/catalog";
 import { publishedProducts, type PublishedCatalog } from "@/lib/catalog-publication";
+import { readCategories } from "@/lib/published-categories";
+import { hasSupabase } from "@/lib/content-backend";
+import { loadRows } from "@/lib/supabase-content";
 
-const catalogPath = path.join(process.cwd(), "data", "catalog.json");
-
-export async function readPublishedCatalog(): Promise<PublishedCatalog | null> {
-  try {
-    const data = JSON.parse(await readFile(catalogPath, "utf8"));
-    if (!data || typeof data !== "object" || Array.isArray(data)) throw new Error("Catálogo publicado inválido.");
-    return data as PublishedCatalog;
-  } catch (error) {
-    if ((error as NodeJS.ErrnoException).code === "ENOENT") return null;
-    throw error;
-  }
+export async function readPublishedCatalog(): Promise<PublishedCatalog> {
+  if (!hasSupabase()) throw new Error("Supabase precisa estar configurado para exibir produtos públicos.");
+  const rows = await loadRows("products");
+  return Object.fromEntries(rows.map((row) => [row.slug, row.data]));
 }
 
 export async function getPublicProducts(): Promise<CatalogProduct[]> {
-  const published = await readPublishedCatalog();
-  return published === null ? [] : publishedProducts(published);
-}
-
-export async function writePublishedCatalog(catalog: PublishedCatalog) {
-  await mkdir(path.dirname(catalogPath), { recursive: true });
-  const temporary = `${catalogPath}.${crypto.randomUUID()}.tmp`;
-  await writeFile(temporary, `${JSON.stringify(catalog, null, 2)}\n`, "utf8");
-  await rename(temporary, catalogPath);
+  const [published, registry] = await Promise.all([readPublishedCatalog(), readCategories()]);
+  return publishedProducts(published).map((product) => {
+    const category = registry.products.find((item) => item.slug === product.category);
+    return category ? { ...product, categoryLabel: category.name.pt, categoryNames: category.name } : product;
+  });
 }

@@ -17,9 +17,12 @@ export default async function CatalogPreviewPage({
 }) {
   if (process.env.NODE_ENV !== "development") notFound();
   const [{ locale, slug }, { token }] = await Promise.all([params, searchParams]);
-  const catalog = token ? getCatalogPreview(token) : null;
-  if (!catalog) notFound();
-  const products = publishedProducts(catalog, { includeInactive: true });
+  const preview = token ? getCatalogPreview(token) : null;
+  if (!preview) notFound();
+  const products = publishedProducts(preview.catalog, { includeInactive: true }).map((product) => {
+    const category = preview.categories.find((item) => item.slug === product.category);
+    return category ? { ...product, categoryLabel: category.name.pt, categoryNames: category.name } : product;
+  });
   const product = products.find((item) => item.slug === slug);
   if (!product) notFound();
   const pageLocale: ProductPageLocale = locale === "en" || locale === "es" ? locale : "pt";

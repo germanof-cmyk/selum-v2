@@ -26,8 +26,7 @@ export default function ProductPageTemplate({
     constructionTitle: data.text[locale].constructionTitle || (data.constructionImages?.length ? t("constructionLabel") : undefined),
     home: t("home"),
     products: t("products"),
-    category: product.category === "estrutural" || product.category === "acessorios" || product.category === "acesso"
-      ? t(`categories.${product.category}`) : product.categoryLabel,
+    category: product.categoryNames?.[locale] || product.categoryNames?.pt || product.categoryLabel,
     quote: t("quote"),
     specialist: t("specialist"),
     galleryLabel: t("galleryLabel"),
